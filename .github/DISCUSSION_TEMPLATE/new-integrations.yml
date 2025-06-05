@@ -1,0 +1,48 @@
+name: Request a new integration
+description: Request support for integrating Home Assistant with a new brand, device, service, or API.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new integration for Home Assistant!  
+        Please provide as much detail as possible to help the community evaluate your request.
+
+  - type: textarea
+    id: usecases
+    attributes:
+      label: What are your use cases for this integration?
+      description: Describe how you'd use this integration in your setup. Specific examples help others understand the value.
+      placeholder: |
+        Example: I'd automate switching my heat pump into eco mode when I leave home, or boost it when solar production is high.
+    validations:
+      required: false
+
+  - type: textarea
+    id: feature
+    attributes:
+      label: Describe the integration you'd like
+      description: Include the name of the device/service and what features you'd expect to work.
+      placeholder: |
+        Example: I'd like to see support for BrandX, including temperature control and status updates.
+    validations:
+      required: true
+
+  - type: textarea
+    id: access
+    attributes:
+      label: Is there a public API or documentation?
+      description: If available, share links to developer docs, API references, or reverse-engineering efforts.
+      placeholder: |
+        Example: https://api.brandx.com/docs or a GitHub repo with protocol information.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to related forum threads, videos, photos, or your own research are welcome.
+      placeholder: |
+        Example: Forum post – https://community.home-assistant.io/t/support-brandx/123456
+    validations:
+      required: false
