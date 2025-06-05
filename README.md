@@ -6,7 +6,7 @@ Welcome! This is the space for proposing and discussing new features for Home As
 
 We use [GitHub Discussions](https://github.com/home-assistant/feature-requests/discussions) to collect ideas, suggestions, and feedback from the community. Whether it’s a big idea, a small tweak, or something in between—this is where to share it.
 
-> **Note**
+> [!IMPORTANT]
 > This repository is for feature requests only.
 > For bug reports or support, please use the appropriate issue tracker listed below.
 
