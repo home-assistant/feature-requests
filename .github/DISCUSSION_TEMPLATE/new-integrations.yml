@@ -10,7 +10,7 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - ➕ Adding device compatibility or new features to existing integrations → Use the "Integration enhancements" category
+        - ➕ Adding device compatibility or new features to existing integrations → [Use the "Integration enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=integration-enhancements)
         - 📦 Requesting third-party integrations to become built-in → If a custom integration exists (for example, via HACS), we consider the request resolved
         - 🐛 Reporting Issues with existing built-in integrations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 🎨 Issues & feature requests with third-party integrations (for example, from HACS) → Report to the custom integration author/project directly

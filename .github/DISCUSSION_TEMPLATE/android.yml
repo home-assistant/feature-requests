@@ -10,9 +10,9 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - 🍎 iOS/macOS app features → Use the "iOS & macOS" category
+        - 🍎 iOS/macOS app features → [Use the "iOS & macOS" category](https://github.com/home-assistant/feature-requests/discussions/new?category=ios-macos)
         - 🐛 Reporting Android app bugs → [Report in the Android repository](https://github.com/home-assistant/android/issues)
-        - 🏠 Core Home Assistant features → Use the appropriate feature category
+        - 🏠 Core Home Assistant features → [Use the appropriate feature category](https://github.com/home-assistant/feature-requests/discussions/new/choose)
 
   - type: textarea
     id: feature_description

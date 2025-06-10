@@ -11,7 +11,7 @@ body:
         **This is NOT for:**
         - 🆘 In need for support building dashboards? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 📦 Requesting third-party cards/dashboards to become built-in → If a custom card/dashboard exists (for example, via HACS), we consider the request resolved
-        - 🎨 General UI improvements (not dashboards) → Use the "Other UI enhancements" category
+        - 🎨 General UI improvements (not dashboards) → [Use the "Other UI enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=other-ui-enhancements)
         - 🐛 Reporting bugs in dashboards → [Report an issue](https://github.com/home-assistant/frontend/issues/new/choose)
         - 🎨 Issues & feature requests with third-party cards/dashboards (for example, from HACS) → Report to the card/dashboard author/project directly
 

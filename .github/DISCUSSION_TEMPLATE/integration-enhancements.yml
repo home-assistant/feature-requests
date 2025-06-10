@@ -10,7 +10,7 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - 🆕 Requesting a brand new integration → Use the "New integrations" category
+        - 🆕 Requesting a brand new integration → [Use the "New integrations" category](https://github.com/home-assistant/feature-requests/discussions/new?category=new-integrations)
         - 🐛 Reporting bugs or issues → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 🎨 Feature requests for third-party integrations (for example, from HACS) → Report to the custom integration author/project directly
         

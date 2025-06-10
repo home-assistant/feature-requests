@@ -13,7 +13,7 @@ body:
         - 📦 Requesting third-party add-ons to become official → If a community add-on exists, we consider the request resolved
         - 🐛 Reporting bugs in official add-ons → Report to the specific [add-on repository](https://github.com/home-assistant/addons)
         - 🎨 Issues & feature requests with third-party add-ons provided by the community → Report to the add-on author/project directly
-        - 🏠 Core Home Assistant features → Use the appropriate feature category
+        - 🏠 Core Home Assistant features → [Use the appropriate feature category](https://github.com/home-assistant/feature-requests/discussions/new/choose)
 
   - type: dropdown
     id: request_type

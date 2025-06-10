@@ -10,9 +10,9 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support writing templates? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - 🤖 Automation features → Use the "Automations & scripts" category
+        - 🤖 Automation features → [Use the "Automations & scripts" category](https://github.com/home-assistant/feature-requests/discussions/new?category=automations-scripts)
         - 🐛 Reporting bugs in templates → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
-        - 🔌 Integration-specific template data → Use the "Integration enhancements" category
+        - 🔌 Integration-specific template data → [Use the "Integration enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=integration-enhancements)
 
   - type: textarea
     id: enhancement_description

@@ -11,7 +11,7 @@ body:
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🐛 Reporting Z-Wave bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
-        - 🔌 Other protocol enhancements → Use the appropriate protocol category
+        - 🔌 Other protocol enhancements → [Use the appropriate protocol category](https://github.com/home-assistant/feature-requests/discussions/new/choose)
 
   - type: textarea
     id: enhancement_description
