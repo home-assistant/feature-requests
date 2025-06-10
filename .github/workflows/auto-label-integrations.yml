@@ -157,8 +157,9 @@ jobs:
             1. Return ONLY the integration domain name (e.g., "mqtt", "hue", "zwave_js", "homekit")
             2. Use the exact domain key from the complete integrations list provided
             3. If multiple matches exist, choose the most likely one based on the integration title/name
-            4. If you cannot determine the exact integration, return "unknown"
-            5. Do not include any explanation, just the domain name
+            4. Take into account the integration title/name might be misspelled or have diacritics
+            5. If you cannot determine the integration, return "unknown"
+            6. Do not include any explanation, just the domain name
             
           prompt: |
             Available Home Assistant integrations (domain: title):
