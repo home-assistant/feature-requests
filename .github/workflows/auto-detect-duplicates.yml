@@ -151,70 +151,60 @@ jobs:
               return;
             }
             
-            // Fetch discussions with same integration labels
-            const similarDiscussions = [];
+            // Use GitHub search API to find discussions with matching integration labels
+            console.log(`Searching for discussions with integration labels: ${integrationLabels.join(', ')}`);
             
-            for (const label of integrationLabels) {
-              console.log(`Searching for discussions with label: ${label}`);
-              
-              const result = await github.graphql(`
-                query($owner: String!, $name: String!, $labels: [String!]) {
-                  repository(owner: $owner, name: $name) {
-                    discussions(
-                      first: 20
-                      categoryId: "${context.payload.discussion.category.node_id}"
-                      labels: $labels
-                      orderBy: {field: CREATED_AT, direction: DESC}
-                    ) {
-                      nodes {
-                        number
-                        title
-                        body
-                        url
-                        createdAt
-                        labels(first: 10) {
-                          nodes {
-                            name
-                          }
+            // Build search query for discussions with any of the current integration labels
+            const labelQueries = integrationLabels.map(label => `label:"${label}"`);
+            const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries.join(' OR ')}`;
+            
+            console.log(`Search query: ${searchQuery}`);
+            
+            const result = await github.graphql(`
+              query($searchQuery: String!) {
+                search(query: $searchQuery, type: DISCUSSION, first: 20) {
+                  discussionCount
+                  nodes {
+                    ... on Discussion {
+                      number
+                      title
+                      body
+                      url
+                      createdAt
+                      labels(first: 10) {
+                        nodes {
+                          name
                         }
                       }
                     }
                   }
                 }
-              `, {
-                owner: context.repo.owner,
-                name: context.repo.repo,
-                labels: [label]
-              });
-              
-              const discussions = result.repository.discussions.nodes
-                .filter(d => d.number !== currentNumber) // Exclude current discussion
-                .map(d => ({
-                  number: d.number,
-                  title: d.title,
-                  body: d.body,
-                  url: d.url,
-                  createdAt: d.createdAt,
-                  labels: d.labels.nodes.map(l => l.name)
-                }));
-              
-              similarDiscussions.push(...discussions);
-            }
+              }
+            `, {
+              searchQuery: searchQuery
+            });
             
-            // Remove duplicates based on discussion number
-            const uniqueDiscussions = Array.from(
-              new Map(similarDiscussions.map(d => [d.number, d])).values()
-            );
+            // Filter out the current discussion and map to our format
+            const similarDiscussions = result.search.nodes
+              .filter(d => d.number !== currentNumber) // Exclude current discussion
+              .map(d => ({
+                number: d.number,
+                title: d.title,
+                body: d.body,
+                url: d.url,
+                createdAt: d.createdAt,
+                labels: d.labels.nodes.map(l => l.name)
+              }));
             
-            console.log(`Found ${uniqueDiscussions.length} similar discussions`);
+            console.log(`Found ${similarDiscussions.length} discussions with matching integration labels`);
             
-            if (uniqueDiscussions.length === 0) {
+            if (similarDiscussions.length === 0) {
               core.setOutput('has_similar', 'false');
               return;
             }
             
             core.setOutput('has_similar', 'true');
-            core.setOutput('similar_discussions', JSON.stringify(uniqueDiscussions.slice(0, 10))); // Limit to 10 most recent
+            core.setOutput('similar_discussions', JSON.stringify(similarDiscussions.slice(0, 10))); // Limit to 10 most recent
 
       - name: Detect duplicates using AI
         id: ai_detection
