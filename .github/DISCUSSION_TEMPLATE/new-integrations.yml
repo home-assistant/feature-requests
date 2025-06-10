@@ -18,16 +18,6 @@ body:
         Please provide as much detail as possible to help the community evaluate your request.
 
   - type: textarea
-    id: usecases
-    attributes:
-      label: What are your use cases for this integration?
-      description: Describe how you'd use this integration in your setup. Specific examples help others understand the value.
-      placeholder: |
-        Example: I'd automate switching my heat pump into eco mode when I leave home, or boost it when solar production is high.
-    validations:
-      required: false
-
-  - type: textarea
     id: feature
     attributes:
       label: Describe the integration you'd like
@@ -36,6 +26,16 @@ body:
         Example: I'd like to see support for BrandX, including temperature control and status updates.
     validations:
       required: true
+
+  - type: textarea
+    id: usecases
+    attributes:
+      label: What are your use cases for this integration?
+      description: Describe how you'd use this integration in your setup. Specific examples help others understand the value.
+      placeholder: |
+        Example: I'd automate switching my heat pump into eco mode when I leave home, or boost it when solar production is high.
+    validations:
+      required: false
 
   - type: textarea
     id: access
