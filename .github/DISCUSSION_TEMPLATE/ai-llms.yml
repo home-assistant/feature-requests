@@ -1,0 +1,44 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting AI & LLM enhancements!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **AI and Large Language Model features** within Home Assistant.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🎤 Voice assistant features → Use the "Voice assistants" category
+        - 🐛 Reporting AI bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What AI or LLM capability would you like to see in Home Assistant?
+      placeholder: |
+        Example: I'd like Home Assistant to use AI to learn my daily patterns and suggest automations based on my behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this AI feature improve your smart home experience?
+      placeholder: |
+        Example: The AI could notice I always turn on certain lights when I get home after sunset and suggest creating an automation for this.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Specific models, similar features in other systems, or technical considerations.
+      placeholder: |
+        Example: Google Home has started doing something similar with their "Routines suggestions" feature...
+    validations:
+      required: false
