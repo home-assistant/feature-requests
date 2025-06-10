@@ -43,25 +43,16 @@ jobs:
             console.log(`Body length: ${body.length}`);
             console.log(`First 300 chars of body: ${body.substring(0, 300)}`);
             
-            // Extract integration name from the form field - try multiple patterns
-            let integrationMatch = body.match(/(?:^|\n)(?:###\s*)?Integration name\s*\n+(.+?)(?:\n|$)/);
-            if (!integrationMatch) {
-              integrationMatch = body.match(/(?:^|\n)Integration name\s*\n+(.+?)(?:\n|$)/);
-            }
+            // Extract integration name - handle blank lines
+            const integrationMatch = body.match(/###\s*Integration name\s*\n\s*\n(.+?)(?:\n|$)/);
             const integrationName = integrationMatch ? integrationMatch[1].trim() : '';
             
-            // Extract integration link - handle "_No response_" as empty
-            let linkMatch = body.match(/(?:^|\n)(?:###\s*)?Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
-            if (!linkMatch) {
-              linkMatch = body.match(/(?:^|\n)Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
-            }
+            // Extract integration link - handle "_No response_" as empty and blank lines
+            const linkMatch = body.match(/###\s*Link to integration documentation on our website\s*\n\s*\n(.+?)(?:\n|$)/);
             const integrationLink = linkMatch && linkMatch[1].trim() !== '_No response_' ? linkMatch[1].trim() : '';
             
-            // Extract enhancement description
-            let descriptionMatch = body.match(/(?:^|\n)(?:###\s*)?Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:###\s*)?(?:Use cases|Anything else)|\n##|$)/);
-            if (!descriptionMatch) {
-              descriptionMatch = body.match(/(?:^|\n)Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:Use cases|Anything else)|\n##|$)/);
-            }
+            // Extract enhancement description - handle blank lines
+            const descriptionMatch = body.match(/###\s*Describe the enhancement\s*\n\s*\n([\s\S]+?)(?=\n###|$)/);
             const enhancementDescription = descriptionMatch ? descriptionMatch[1].trim() : '';
             
             console.log(`Extracted - Name: "${integrationName}", Link: "${integrationLink}", Description: "${enhancementDescription.substring(0, 50)}..."`);
@@ -69,6 +60,7 @@ jobs:
             core.setOutput('integration_name', integrationName);
             core.setOutput('integration_link', integrationLink);
             core.setOutput('enhancement_description', enhancementDescription);
+            core.setOutput('full_body', body);
             
             console.log(`Integration name: ${integrationName}`);
             console.log(`Integration link: ${integrationLink}`);
@@ -177,10 +169,8 @@ jobs:
             Available Home Assistant integrations (domain: title):
             ${{ steps.find_integrations.outputs.integration_list }}
             
-            User request:
-            Integration name: ${{ steps.extract.outputs.integration_name }}
-            Integration link: ${{ steps.extract.outputs.integration_link }}
-            Enhancement description: ${{ steps.extract.outputs.enhancement_description }}
+            Full user request:
+            ${{ steps.extract.outputs.full_body }}
             
             What is the integration domain name?
           
