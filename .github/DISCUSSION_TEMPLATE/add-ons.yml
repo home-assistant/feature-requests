@@ -1,0 +1,103 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an add-on or add-on enhancement!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new official add-ons or enhancements to existing add-ons**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 📦 Requesting third-party add-ons to become official → If a community add-on exists, we consider the request resolved
+        - 🐛 Reporting bugs in official add-ons → Report to the specific [add-on repository](https://github.com/home-assistant/addons)
+        - 🎨 Issues & feature requests with third-party add-ons provided by the community → Report to the add-on author/project directly
+        - 🏠 Core Home Assistant features → Use the appropriate feature category
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: What type of request is this?
+      options:
+        - New add-on
+        - Enhancement to existing add-on
+    validations:
+      required: true
+
+  - type: dropdown
+    id: existing_addon_name
+    attributes:
+      label: Existing add-on name
+      description: If this is an enhancement, which add-on should be improved?
+      options:
+        - Assist Microphone
+        - CEC Scanner
+        - deCONZ
+        - DHCP server
+        - Dnsmasq
+        - Duck DNS
+        - File editor
+        - Git pull
+        - Google Assistant SDK
+        - Let's Encrypt
+        - MariaDB
+        - Matter Server
+        - Mosquitto broker
+        - NGINX Home Assistant SSL proxy
+        - OpenThread Border Router
+        - OpenWakeWord
+        - Piper
+        - RPC Shutdown
+        - Samba share
+        - Silabs Flasher
+        - Silabs Multiprotocol
+        - Speech to Phrase
+        - SSH server
+        - TellStick
+        - VLC
+        - Whisper
+        - Z-Wave JS
+    validations:
+      required: false
+
+  - type: textarea
+    id: addon_description
+    attributes:
+      label: Describe the add-on or add-on enhancement
+      description: What add-on would you like to see, or how should an existing add-on be enhanced?
+      placeholder: |
+        Example: I'd like an official WireGuard VPN server add-on that integrates with Home Assistant's user management system.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this add-on improve your Home Assistant experience?
+      placeholder: |
+        Example: This would allow secure remote access to Home Assistant without exposing it to the internet, with easy user management through the HA interface.
+    validations:
+      required: true
+
+  - type: textarea
+    id: upstream_project
+    attributes:
+      label: Upstream project
+      description: For new add-ons based on existing software, please provide links. (optional)
+      placeholder: |
+        Example: WireGuard project: https://www.wireguard.com/
+        Docker image that could be used: https://hub.docker.com/r/linuxserver/wireguard
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Similar community add-ons, maintenance considerations, or other relevant information.
+      placeholder: |
+        Example: There's a community add-on that does this, but it hasn't been updated in 2 years: [link]
+    validations:
+      required: false
