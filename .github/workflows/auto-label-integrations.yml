@@ -154,6 +154,7 @@ jobs:
         if: steps.find_integrations.outputs.found == 'multiple' || steps.find_integrations.outputs.found == 'none'
         uses: actions/ai-inference@v1
         with:
+          model: openai/gpt-4o-mini
           system-prompt: |
             You are a Home Assistant integration classifier. Your task is to identify the correct integration domain name from the given information.
             
