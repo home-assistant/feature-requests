@@ -1,0 +1,59 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for sharing your experimental idea!** 🚀
+
+        ### 💡 This is the place for wild ideas!
+        
+        This form is for **crazy, experimental, or early-stage ideas** that might reshape how we think about home automation.
+        
+        Don't worry about:
+        - Whether it's technically feasible right now
+        - If it fits into existing categories
+        - Whether anyone else has suggested it
+        
+        We want to hear your creative vision for the future of Home Assistant!
+
+  - type: textarea
+    id: idea_description
+    attributes:
+      label: Describe your idea
+      description: Let your imagination run wild! What's your vision?
+      placeholder: |
+        Example: What if Home Assistant could use computer vision to understand what's happening in a room and automatically adjust everything - lights, music, temperature - based on the activity it detects?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why_cool
+    attributes:
+      label: Why is this exciting?
+      description: What makes this idea special or game-changing?
+      placeholder: |
+        Example: This would make homes truly intelligent - no more programming scenes for "movie night" or "dinner party". The house would just know and adapt!
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Potential use cases
+      description: Dream up some scenarios where this would be amazing.
+      placeholder: |
+        Example: 
+        - Automatically dims lights and pauses music when you fall asleep on the couch
+        - Adjusts lighting for video calls when it sees you're in a meeting
+        - Knows when kids are doing homework and minimizes distractions
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Similar concepts, sci-fi inspiration, sketches, or just more ideas!
+      placeholder: |
+        Example: Like in that movie where the house AI just knows what everyone needs... but privacy-focused and local!
+    validations:
+      required: false
