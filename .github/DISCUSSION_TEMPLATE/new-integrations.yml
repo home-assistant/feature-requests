@@ -1,5 +1,3 @@
-name: Request a new integration
-description: Request support for integrating Home Assistant with a new brand, device, service, or API.
 body:
   - type: markdown
     attributes:
