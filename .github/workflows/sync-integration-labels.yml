@@ -15,7 +15,7 @@ jobs:
           script: |
             // Fetch all integrations from Home Assistant
             const response = await fetch('https://next.home-assistant.io/integrations.json');
-            const integrations = await response.json();
+            const integrationsData = await response.json();
             
             // Get all existing labels with pagination
             const existingLabels = [];
@@ -23,23 +23,23 @@ jobs:
             let hasMore = true;
             
             while (hasMore) {
-              const response = await github.rest.issues.listLabelsForRepo({
+              const labelsResponse = await github.rest.issues.listLabelsForRepo({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 per_page: 100,
                 page: page
               });
               
-              existingLabels.push(...response.data);
-              hasMore = response.data.length === 100;
+              existingLabels.push(...labelsResponse.data);
+              hasMore = labelsResponse.data.length === 100;
               page++;
             }
             
             const existingLabelNames = new Set(existingLabels.map(label => label.name));
             
             // Create or update labels for each integration
-            for (const integration of integrations) {
-              const labelName = `integration: ${integration.domain}`;
+            for (const [domain, integration] of Object.entries(integrationsData)) {
+              const labelName = `integration: ${domain}`;
               const labelDescription = integration.title;
               
               if (existingLabelNames.has(labelName)) {
@@ -67,4 +67,4 @@ jobs:
               }
             }
             
-            console.log(`Processed ${integrations.length} integrations`);
+            console.log(`Processed ${Object.keys(integrationsData).length} integrations`);
