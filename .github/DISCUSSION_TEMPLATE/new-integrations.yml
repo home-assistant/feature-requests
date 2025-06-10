@@ -8,13 +8,11 @@ body:
         
         **This is NOT for:**
         - 🐛 Reporting bugs in existing integrations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
-        - 🆘 Requesting support → [Visit our community](https://www.home-assistant.io/community/)
-        - ➕ Adding device compatibility to existing integrations → Use the "Integration enhancements" category
-        - 📦 Requesting third-party integrations to become built-in → If a custom integration exists (e.g., via HACS), we consider the request resolved
-        
-        **For issues with:**
-        - Built-in integrations → [Report here](https://github.com/home-assistant/core/issues/new/choose)
-        - Third-party integrations (e.g., from HACS) → Report to the custom integration author/project directly
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - ➕ Adding device compatibility or new features to existing integrations → Use the "Integration enhancements" category
+        - 📦 Requesting third-party integrations to become built-in → If a custom integration exists (for example, via HACS), we consider the request resolved
+        - 🔧 Issues with built-in integrations → [Report here](https://github.com/home-assistant/core/issues/new/choose)
+        - 🎨 Issues & feature requests with third-party integrations (for example, from HACS) → Report to the custom integration author/project directly
         
         ---
         
