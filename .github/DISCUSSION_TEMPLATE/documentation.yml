@@ -20,7 +20,7 @@ body:
       label: Describe the improvement
       description: What structural or organizational change would make our documentation better? Include what problems the current structure causes and how you'd improve it.
       placeholder: |
-        Example: I'd like to see a "Common Patterns" section that shows typical automation scenarios with full examples. Currently, new users struggle to understand how triggers, conditions, and actions work together because each is documented separately without complete examples. I propose adding a new section with 10-15 complete automation examples, progressing from simple to complex, with explanations of why each part is needed.
+        Example: The current automation documentation is fragmented - triggers, conditions, and actions are explained separately, making it hard for new users to understand how they work together. I'd like to see a new "Automation Cookbook" section with real-world examples like "Turn on lights when arriving home after sunset" or "Send notifications when doors are left open." Each example would show the complete YAML with explanations of why each part is needed, progressing from simple to advanced scenarios.
     validations:
       required: true
 
