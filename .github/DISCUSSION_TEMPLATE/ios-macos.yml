@@ -1,0 +1,55 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to our iOS/macOS app!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new features for the iOS, iPadOS, macOS, or watchOS apps**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🤖 Android app features → Use the "Android" category
+        - 🐛 Reporting iOS/macOS app bugs → [Report in the iOS repository](https://github.com/home-assistant/iOS/issues)
+        - 🏠 Core Home Assistant features → Use the appropriate feature category
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What would you like the iOS/macOS app to do?
+      placeholder: |
+        Example: I'd like interactive widgets that can trigger actions directly from the home screen without opening the app.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would you use this feature in your daily life?
+      placeholder: |
+        Example: I could quickly toggle lights or activate scenes right from my iPhone's home screen or lock screen, making common actions much faster.
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Similar features in other apps or mockups of how this might work. (optional)
+      placeholder: |
+        Example: The Philips Hue app has interactive widgets that work similarly to what I'm proposing.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Device models, iOS versions, or other relevant information.
+      placeholder: |
+        Example: This would be especially useful on iPhone 14 Pro with Dynamic Island support...
+    validations:
+      required: false
