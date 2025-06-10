@@ -43,15 +43,15 @@ jobs:
             console.log(`Body length: ${body.length}`);
             
             // Extract integration name from the form field
-            const integrationMatch = body.match(/### Integration name\s*\n\s*(.+?)(?:\n|$)/);
+            const integrationMatch = body.match(/(?:^|\n)(?:#+\s*)?Integration name\s*\n+(.+?)(?:\n|$)/);
             const integrationName = integrationMatch ? integrationMatch[1].trim() : '';
             
-            // Extract integration link
-            const linkMatch = body.match(/### Link to integration documentation on our website\s*\n\s*(.+?)(?:\n|$)/);
-            const integrationLink = linkMatch ? linkMatch[1].trim() : '';
+            // Extract integration link - handle "_No response_" as empty
+            const linkMatch = body.match(/(?:^|\n)(?:#+\s*)?Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
+            const integrationLink = linkMatch && linkMatch[1].trim() !== '_No response_' ? linkMatch[1].trim() : '';
             
             // Extract enhancement description
-            const descriptionMatch = body.match(/### Describe the enhancement\s*\n\s*([\s\S]+?)(?=\n###|$)/);
+            const descriptionMatch = body.match(/(?:^|\n)(?:#+\s*)?Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:#+\s*)?(?:Use cases|Anything else)|\n##|$)/);
             const enhancementDescription = descriptionMatch ? descriptionMatch[1].trim() : '';
             
             core.setOutput('integration_name', integrationName);
