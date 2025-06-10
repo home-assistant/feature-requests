@@ -216,22 +216,49 @@ jobs:
               }
               
               if (labelExists) {
-                // Get current labels
-                const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.discussion.number
+                // Get current labels using GraphQL
+                const discussionData = await github.graphql(`
+                  query($nodeId: ID!) {
+                    node(id: $nodeId) {
+                      ... on Discussion {
+                        labels(first: 100) {
+                          nodes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                `, {
+                  nodeId: context.payload.discussion.node_id
                 });
                 
+                const currentLabels = discussionData.node.labels.nodes;
                 const hasLabel = currentLabels.some(label => label.name === labelName);
                 
                 if (!hasLabel) {
-                  // Add the label to the discussion
-                  await github.rest.issues.addLabels({
+                  // Get the label ID first
+                  const { data: labelData } = await github.rest.issues.getLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    issue_number: context.payload.discussion.number,
-                    labels: [labelName]
+                    name: labelName
+                  });
+                  
+                  // Add the label to the discussion using GraphQL
+                  await github.graphql(`
+                    mutation($labelableId: ID!, $labelIds: [ID!]!) {
+                      addLabelsToLabelable(input: {
+                        labelableId: $labelableId,
+                        labelIds: $labelIds
+                      }) {
+                        labelable {
+                          id
+                        }
+                      }
+                    }
+                  `, {
+                    labelableId: context.payload.discussion.node_id,
+                    labelIds: [labelData.node_id]
                   });
                   
                   console.log(`Applied label: ${labelName}`);
