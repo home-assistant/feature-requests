@@ -2,7 +2,7 @@ name: Auto-detect duplicate feature requests
 
 on:
   discussion:
-    types: [labeled]
+    types: [labeled, edited]
 
 permissions:
   discussions: write
@@ -19,15 +19,39 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // Check if the added label is an integration label
-            const addedLabel = context.payload.label;
-            if (!addedLabel || !addedLabel.name.startsWith('integration:')) {
-              console.log('Added label is not an integration label, skipping duplicate detection');
+            // Debug: Log the event payload
+            console.log('Event name:', context.eventName);
+            console.log('Event action:', context.payload.action);
+            console.log('Event payload keys:', Object.keys(context.payload));
+            
+            // Handle both labeled and edited events
+            if (context.payload.action === 'labeled') {
+              // For labeled events, check the specific label that was added
+              const addedLabel = context.payload.label;
+              if (!addedLabel) {
+                console.log('No label found in labeled event payload');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+              
+              console.log(`Label added: ${addedLabel.name}`);
+              
+              if (!addedLabel.name.startsWith('integration:')) {
+                console.log('Added label is not an integration label, skipping duplicate detection');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+              
+              console.log(`Integration label added: ${addedLabel.name}`);
+            } else if (context.payload.action === 'edited') {
+              // For edited events, we need to check if any integration labels exist
+              // This is a fallback in case labeled events don't work
+              console.log('Discussion was edited, checking for integration labels');
+            } else {
+              console.log(`Unsupported action: ${context.payload.action}`);
               core.setOutput('should_continue', 'false');
               return;
             }
-            
-            console.log(`Integration label added: ${addedLabel.name}`);
             
             const discussion = await github.graphql(`
               query($nodeId: ID!) {
@@ -53,6 +77,46 @@ jobs:
             const integrationLabels = currentDiscussion.labels.nodes
               .filter(label => label.name.startsWith('integration:'))
               .map(label => label.name);
+            
+            // For edited events, only proceed if we have integration labels
+            if (context.payload.action === 'edited' && integrationLabels.length === 0) {
+              console.log('No integration labels found on edited discussion, skipping');
+              core.setOutput('should_continue', 'false');
+              return;
+            }
+            
+            // Check if we've already posted a duplicate detection comment recently
+            const comments = await github.graphql(`
+              query($nodeId: ID!) {
+                node(id: $nodeId) {
+                  ... on Discussion {
+                    comments(first: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
+                      nodes {
+                        body
+                        createdAt
+                        author {
+                          login
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `, {
+              nodeId: context.payload.discussion.node_id
+            });
+            
+            // Check if we've already posted a duplicate detection comment
+            const recentDuplicateComment = comments.node.comments.nodes.find(comment => 
+              comment.author.login === 'github-actions[bot]' && 
+              comment.body.includes('Potential Duplicate Detection')
+            );
+            
+            if (recentDuplicateComment) {
+              console.log('Already posted duplicate detection comment, skipping');
+              core.setOutput('should_continue', 'false');
+              return;
+            }
             
             core.setOutput('should_continue', 'true');
             core.setOutput('current_number', currentDiscussion.number);
