@@ -1,0 +1,55 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to Home Assistant OS or Supervisor!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new features for Home Assistant OS or Supervisor**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🐛 Reporting OS/Supervisor bugs → [Report an issue](https://github.com/home-assistant/operating-system/issues) or [Supervisor issues](https://github.com/home-assistant/supervisor/issues)
+        - 🏠 Core Home Assistant features → Use the appropriate feature category
+        - 📦 Add-on requests → Use the "Add-ons" category
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What OS or Supervisor capability would you like to add?
+      placeholder: |
+        Example: I'd like the ability to schedule automatic backups to occur at specific times rather than just daily.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: Why is this feature important for your Home Assistant setup?
+      placeholder: |
+        Example: I'd schedule backups during low-usage hours (3 AM) to avoid any performance impact during the day when my automations are most active.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_workarounds
+    attributes:
+      label: Current workarounds
+      description: How are you handling this need today? (optional)
+      placeholder: |
+        Example: I currently use an automation to trigger backups via service call, but it lacks the configuration options of the built-in backup system.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Hardware details, security considerations, or related information.
+      placeholder: |
+        Example: This would be especially useful for users running on SD cards who want to minimize writes during active hours...
+    validations:
+      required: false
