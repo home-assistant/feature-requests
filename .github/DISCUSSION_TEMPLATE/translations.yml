@@ -1,0 +1,53 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for helping make Home Assistant more accessible worldwide!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new languages or translation system improvements**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🔤 Fixing existing translations → [Contribute on Lokalise](https://developers.home-assistant.io/docs/translations)
+
+  - type: textarea
+    id: translation_request
+    attributes:
+      label: Describe the translation need
+      description: What language or translation feature would you like to see?
+      placeholder: |
+        Example: I'd like Home Assistant to support Bengali (bn) as a new language. It's spoken by over 230 million people but isn't currently available.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Impact
+      description: Who would benefit from this translation improvement?
+      placeholder: |
+        Example: This would make Home Assistant accessible to millions of Bengali speakers in Bangladesh and India who are currently excluded due to the language barrier.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Can you help with translations or do you know others who could? (optional)
+      placeholder: |
+        Example: I'm a native Bengali speaker and would be happy to help translate. I also know a community of users who could help review translations.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Language codes, regional variations, or special considerations.
+      placeholder: |
+        Example: Bengali uses different scripts in Bangladesh (bn-BD) and India (bn-IN), but they're mutually intelligible...
+    validations:
+      required: false
