@@ -9,7 +9,7 @@ body:
         This form is for requesting features related to **Assist, voice pipelines, intents, or third-party voice assistants**.
         
         **This is NOT for:**
-        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🤖 General AI features → Use the "AI & LLMs" category
         - 🐛 Reporting voice assistant bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
 

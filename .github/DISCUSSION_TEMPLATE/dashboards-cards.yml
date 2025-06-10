@@ -9,7 +9,7 @@ body:
         This form is for requesting **new dashboard features, cards, strategies, or visual enhancements**.
         
         **This is NOT for:**
-        - 🆘 In need for support building dashboards? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support building dashboards? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 📦 Requesting third-party cards/dashboards to become built-in → If a custom card/dashboard exists (for example, via HACS), we consider the request resolved
         - 🎨 General UI improvements (not dashboards) → Use the "Other UI enhancements" category
         - 🐛 Reporting bugs in dashboards → [Report an issue](https://github.com/home-assistant/frontend/issues/new/choose)

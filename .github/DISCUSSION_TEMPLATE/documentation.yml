@@ -9,7 +9,7 @@ body:
         This form is for suggesting **structural improvements to our documentation**.
         
         **This is NOT for:**
-        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 📄 Improvements to specific integration documentation → Use the "Provide feedback" or "Edit" button at the bottom of that integration's documentation page
         - ✏️ Fixing typos or small updates → [Edit directly on the docs site](https://www.home-assistant.io/) using the "Edit this page on GitHub" link
         - 🐛 Reporting documentation errors → [Open an issue in the docs repo](https://github.com/home-assistant/home-assistant.io/issues)

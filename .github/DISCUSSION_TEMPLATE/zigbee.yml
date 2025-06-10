@@ -9,7 +9,7 @@ body:
         This form is for requesting **Zigbee protocol features or device support**.
         
         **This is NOT for:**
-        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🐛 Reporting Zigbee bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 🔌 Other protocol enhancements → Use the appropriate protocol category
 

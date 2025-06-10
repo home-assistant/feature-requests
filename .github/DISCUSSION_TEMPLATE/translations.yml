@@ -9,7 +9,7 @@ body:
         This form is for requesting **new languages or translation system improvements**.
         
         **This is NOT for:**
-        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🔤 Fixing existing translations → [Contribute on Lokalise](https://developers.home-assistant.io/docs/translations)
 
   - type: textarea

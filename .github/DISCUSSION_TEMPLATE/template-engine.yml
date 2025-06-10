@@ -9,7 +9,7 @@ body:
         This form is for requesting **new template functions, filters, or enhancements** to the Jinja2 template engine.
         
         **This is NOT for:**
-        - 🆘 In need for support writing templates? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support writing templates? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🤖 Automation features → Use the "Automations & scripts" category
         - 🐛 Reporting bugs in templates → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 🔌 Integration-specific template data → Use the "Integration enhancements" category

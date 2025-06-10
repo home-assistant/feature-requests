@@ -9,7 +9,7 @@ body:
         This form is for requesting **new features for the automation and script engine** itself.
         
         **This is NOT for:**
-        - 🆘 In need for support creating automations? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support creating automations? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🔌 Integration-specific actions or services → Use the "Integration enhancements" category
         - 🐛 Reporting bugs in automations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 📝 Template enhancements → Use the "Template engine" category

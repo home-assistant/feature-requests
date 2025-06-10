@@ -9,7 +9,7 @@ body:
         This form is for requesting **new features or improvements** to existing built-in integrations.
         
         **This is NOT for:**
-        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🆕 Requesting a brand new integration → Use the "New integrations" category
         - 🐛 Reporting bugs or issues → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
         - 🎨 Feature requests for third-party integrations (for example, from HACS) → Report to the custom integration author/project directly
