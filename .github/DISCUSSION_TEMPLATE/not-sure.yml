@@ -1,0 +1,61 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for your feature request!** ❤️
+
+        ### 🤷 Not sure where this belongs? No problem!
+        
+        Sometimes ideas don't fit neatly into categories, and that's okay. Use this form for any feature request when you're not sure which category is right.
+        
+        Don't worry about getting it perfect - we'll help figure out where it belongs (or maybe even spawn new categories in the future)!
+
+  - type: textarea
+    id: request_description
+    attributes:
+      label: Describe your request
+      description: What would you like Home Assistant to do?
+      placeholder: |
+        Example: I'd like Home Assistant to detect when my coffee maker is done brewing and send a notification to my phone.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why_unsure
+    attributes:
+      label: Why the uncertainty?
+      description: What makes it hard to categorize this request? (optional)
+      placeholder: |
+        Example: This could be an automation feature, but it might need a new integration for my coffee maker, or maybe it's about improving device detection?
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would you use this feature?
+      placeholder: |
+        Example: I work from home and often forget about my coffee. This would help me enjoy it while it's still hot!
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected_areas
+    attributes:
+      label: What areas might this affect?
+      description: Take your best guess at what parts of Home Assistant this might involve. (optional)
+      placeholder: |
+        Example: Maybe integrations for detecting appliance states, automations for the notification logic, and possibly energy monitoring?
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Any other information that might help us understand your request.
+      placeholder: |
+        Example: I've seen smart plugs that can detect when devices finish running based on power draw...
+    validations:
+      required: false
