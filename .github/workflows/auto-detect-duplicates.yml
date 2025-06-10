@@ -156,7 +156,13 @@ jobs:
             
             // Build search query for discussions with any of the current integration labels
             const labelQueries = integrationLabels.map(label => `label:"${label}"`);
-            const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries.join(' OR ')}`;
+            let searchQuery;
+            
+            if (labelQueries.length === 1) {
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries[0]}`;
+            } else {
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${labelQueries.join(' OR ')})`;
+            }
             
             console.log(`Search query: ${searchQuery}`);
             
