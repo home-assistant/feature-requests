@@ -210,7 +210,18 @@ jobs:
             }
             
             core.setOutput('has_similar', 'true');
-            core.setOutput('similar_discussions', JSON.stringify(similarDiscussions.slice(0, 10))); // Limit to 10 most recent
+            
+            // Clean the discussion data to prevent JSON parsing issues
+            const cleanedDiscussions = similarDiscussions.slice(0, 10).map(d => ({
+              number: d.number,
+              title: d.title.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''), // Remove control characters
+              body: d.body ? d.body.substring(0, 500).replace(/[\u0000-\u001F\u007F-\u009F]/g, '') : '', // Truncate and clean
+              url: d.url,
+              createdAt: d.createdAt,
+              labels: d.labels
+            }));
+            
+            core.setOutput('similar_discussions', JSON.stringify(cleanedDiscussions));
 
       - name: Detect duplicates using AI
         id: ai_detection
@@ -253,12 +264,34 @@ jobs:
           script: |
             const aiResponse = '${{ steps.ai_detection.outputs.response }}';
             
+            console.log('Raw AI response:', JSON.stringify(aiResponse));
+            
             let duplicateNumbers = [];
             try {
-              duplicateNumbers = JSON.parse(aiResponse.trim());
+              // Clean the response of any potential control characters
+              const cleanResponse = aiResponse.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+              console.log('Cleaned AI response:', cleanResponse);
+              
+              duplicateNumbers = JSON.parse(cleanResponse);
+              
+              // Ensure it's an array and contains only numbers
+              if (!Array.isArray(duplicateNumbers)) {
+                console.log('AI response is not an array, trying to extract numbers');
+                const numberMatches = cleanResponse.match(/\d+/g);
+                duplicateNumbers = numberMatches ? numberMatches.map(n => parseInt(n)) : [];
+              }
+              
+              // Filter to only valid numbers
+              duplicateNumbers = duplicateNumbers.filter(n => typeof n === 'number' && !isNaN(n));
+              
             } catch (error) {
-              console.log('Failed to parse AI response:', aiResponse);
-              return;
+              console.log('Failed to parse AI response as JSON:', error.message);
+              console.log('Raw response:', aiResponse);
+              
+              // Fallback: try to extract numbers from the response
+              const numberMatches = aiResponse.match(/\d+/g);
+              duplicateNumbers = numberMatches ? numberMatches.map(n => parseInt(n)) : [];
+              console.log('Extracted numbers as fallback:', duplicateNumbers);
             }
             
             if (!Array.isArray(duplicateNumbers) || duplicateNumbers.length === 0) {
