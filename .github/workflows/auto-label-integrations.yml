@@ -19,7 +19,28 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.discussion.body;
+            // For edited discussions, we need to fetch the full discussion body
+            let body = '';
+            if (context.eventName === 'discussion' && context.payload.action === 'edited') {
+              // Fetch the full discussion details
+              const discussion = await github.graphql(`
+                query($nodeId: ID!) {
+                  node(id: $nodeId) {
+                    ... on Discussion {
+                      body
+                    }
+                  }
+                }
+              `, {
+                nodeId: context.payload.discussion.node_id
+              });
+              body = discussion.node.body;
+            } else {
+              body = context.payload.discussion.body;
+            }
+            
+            console.log(`Event: ${context.eventName}, Action: ${context.payload.action}`);
+            console.log(`Body length: ${body.length}`);
             
             // Extract integration name from the form field
             const integrationMatch = body.match(/### Integration name\s*\n\s*(.+?)(?:\n|$)/);
