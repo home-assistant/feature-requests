@@ -1,0 +1,57 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to our automation and script engine!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new features for the automation and script engine** itself.
+        
+        **This is NOT for:**
+        - 🆘 In need for support creating automations? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🔌 Integration-specific actions or services → Use the "Integration enhancements" category
+        - 🐛 Reporting bugs in automations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 📝 Template enhancements → Use the "Template engine" category
+        
+        This is specifically for features that extend what automations and scripts can do at the engine level.
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What automation or script capability would you like to add? Please explain any current limitations and how you'd like it to work.
+      placeholder: |
+        Example: I'd like to have a "retry" option for actions that fail. Currently, if an action fails, the entire automation stops. I'd like to specify retry attempts and delays between retries.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: Provide specific examples of automations where this feature would be helpful.
+      placeholder: |
+        Example: When sending notifications to my phone, sometimes the connection fails. With retry logic, I could ensure important notifications are delivered without creating complex workarounds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workarounds
+    attributes:
+      label: Current workarounds
+      description: How are you handling this limitation today? (optional)
+      placeholder: |
+        Example: I currently use multiple automations with delays and conditions to simulate retry behavior, which is complex and hard to maintain.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to related discussions, examples from other systems, or mockups.
+      placeholder: |
+        Example: Node-RED has a similar feature - [link to documentation]
+    validations:
+      required: false
