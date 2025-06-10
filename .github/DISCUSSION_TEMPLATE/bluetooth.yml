@@ -1,0 +1,58 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting a Bluetooth enhancement!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **Bluetooth and BLE features or device support**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🐛 Reporting Bluetooth bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🔌 Other protocol enhancements → Use the appropriate protocol category
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What Bluetooth feature or device support would you like to see?
+      placeholder: |
+        Example: I'd like support for Bluetooth mesh devices, particularly for controlling multiple Bluetooth light bulbs as a group.
+    validations:
+      required: true
+
+  - type: textarea
+    id: device_information
+    attributes:
+      label: Device information
+      description: Specific devices, Bluetooth versions, or protocols involved. (optional)
+      placeholder: |
+        Example: 
+        Device: LIFX Candle Color
+        Bluetooth version: 5.0 BLE
+        Uses Bluetooth mesh protocol
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this enhancement improve your setup?
+      placeholder: |
+        Example: This would allow me to control groups of Bluetooth bulbs without each one needing a direct connection, improving reliability and range.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to device documentation, BLE characteristics, or technical specifications.
+      placeholder: |
+        Example: Device BLE documentation: [link]
+        Similar implementation in OpenHAB: [link]
+    validations:
+      required: false
