@@ -1,0 +1,58 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting a Zigbee enhancement!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **Zigbee protocol features or device support**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🐛 Reporting Zigbee bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🔌 Other protocol enhancements → Use the appropriate protocol category
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What Zigbee feature or device support would you like to see?
+      placeholder: |
+        Example: I'd like support for the new Aqara P2 motion sensor, which uses some Zigbee 3.0 features that aren't currently recognized.
+    validations:
+      required: true
+
+  - type: textarea
+    id: device_information
+    attributes:
+      label: Device information
+      description: For device requests, please provide manufacturer, model, and any technical details. (optional)
+      placeholder: |
+        Example: 
+        Manufacturer: Aqara
+        Model: MS-S02
+        Zigbee clusters used: occupancy, illuminance, battery
+    validations:
+      required: false
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this enhancement improve your Zigbee setup?
+      placeholder: |
+        Example: This sensor has much better battery life and faster motion detection than older models, which would make my automations more responsive.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to device documentation, ZHA/Zigbee2MQTT quirks, or other technical information.
+      placeholder: |
+        Example: Device documentation: [link]
+        There's a custom quirk available here: [link]
+    validations:
+      required: false
