@@ -43,16 +43,16 @@ jobs:
             console.log(`Body length: ${body.length}`);
             console.log(`First 300 chars of body: ${body.substring(0, 300)}`);
             
-            // Extract integration name - handle blank lines
-            const integrationMatch = body.match(/###\s*Integration name\s*\n\s*\n(.+?)(?:\n|$)/);
+            // Extract integration name - handle single newline
+            const integrationMatch = body.match(/###\s*Integration name\s*\n\s*(.+?)(?=\n\s*\n|\n###|$)/s);
             const integrationName = integrationMatch ? integrationMatch[1].trim() : '';
             
-            // Extract integration link - handle "_No response_" as empty and blank lines
-            const linkMatch = body.match(/###\s*Link to integration documentation on our website\s*\n\s*\n(.+?)(?:\n|$)/);
+            // Extract integration link - handle "_No response_" as empty
+            const linkMatch = body.match(/###\s*Link to integration documentation on our website\s*\n\s*(.+?)(?=\n\s*\n|\n###|$)/s);
             const integrationLink = linkMatch && linkMatch[1].trim() !== '_No response_' ? linkMatch[1].trim() : '';
             
-            // Extract enhancement description - handle blank lines
-            const descriptionMatch = body.match(/###\s*Describe the enhancement\s*\n\s*\n([\s\S]+?)(?=\n###|$)/);
+            // Extract enhancement description
+            const descriptionMatch = body.match(/###\s*Describe the enhancement\s*\n\s*([\s\S]+?)(?=\n###|$)/);
             const enhancementDescription = descriptionMatch ? descriptionMatch[1].trim() : '';
             
             console.log(`Extracted - Name: "${integrationName}", Link: "${integrationLink}", Description: "${enhancementDescription.substring(0, 50)}..."`);
