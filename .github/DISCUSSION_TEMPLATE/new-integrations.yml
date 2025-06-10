@@ -2,7 +2,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Before you submit
+        **Thanks for suggesting a new integration for Home Assistant!** ❤️
+
+        ## Before you submit‼️
         
         This form is **ONLY** for requesting a brand new integration that doesn't exist yet.
         
@@ -14,9 +16,6 @@ body:
         - 🔧 Issues with built-in integrations → [Report here](https://github.com/home-assistant/core/issues/new/choose)
         - 🎨 Issues & feature requests with third-party integrations (for example, from HACS) → Report to the custom integration author/project directly
         
-        ---
-        
-        Thanks for suggesting a new integration for Home Assistant!  
         Please provide as much detail as possible to help the community evaluate your request.
 
   - type: textarea
