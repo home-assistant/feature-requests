@@ -47,6 +47,14 @@ jobs:
               // For edited events, we need to check if any integration labels exist
               // This is a fallback in case labeled events don't work
               console.log('Discussion was edited, checking for integration labels');
+              
+              // Check if this edit was just about labels (not content)
+              const changes = context.payload.changes;
+              if (changes && !changes.title && !changes.body) {
+                console.log('Edit appears to be label-only, proceeding with duplicate detection');
+              } else {
+                console.log('Edit includes content changes, this might be from auto-labeling');
+              }
             } else {
               console.log(`Unsupported action: ${context.payload.action}`);
               core.setOutput('should_continue', 'false');
@@ -90,7 +98,7 @@ jobs:
               query($nodeId: ID!) {
                 node(id: $nodeId) {
                   ... on Discussion {
-                    comments(first: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
+                    comments(first: 10) {
                       nodes {
                         body
                         createdAt
@@ -108,7 +116,7 @@ jobs:
             
             // Check if we've already posted a duplicate detection comment
             const recentDuplicateComment = comments.node.comments.nodes.find(comment => 
-              comment.author.login === 'github-actions[bot]' && 
+              comment.author && comment.author.login === 'github-actions[bot]' && 
               comment.body.includes('Potential Duplicate Detection')
             );
             
