@@ -2,6 +2,22 @@ body:
   - type: markdown
     attributes:
       value: |
+        ## Before you submit
+        
+        This form is **ONLY** for requesting a brand new integration that doesn't exist yet.
+        
+        **This is NOT for:**
+        - 🐛 Reporting bugs in existing integrations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🆘 Requesting support → [Visit our community](https://www.home-assistant.io/community/)
+        - ➕ Adding device compatibility to existing integrations → Use the "Integration enhancements" category
+        - 📦 Requesting third-party integrations to become built-in → If a custom integration exists (e.g., via HACS), we consider the request resolved
+        
+        **For issues with:**
+        - Built-in integrations → [Report here](https://github.com/home-assistant/core/issues/new/choose)
+        - Third-party integrations (e.g., from HACS) → Report to the custom integration author/project directly
+        
+        ---
+        
         Thanks for suggesting a new integration for Home Assistant!  
         Please provide as much detail as possible to help the community evaluate your request.
 
