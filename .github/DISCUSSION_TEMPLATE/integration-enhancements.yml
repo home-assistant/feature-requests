@@ -1,0 +1,66 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to an existing integration!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new features or improvements** to existing built-in integrations.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🆕 Requesting a brand new integration → Use the "New integrations" category
+        - 🐛 Reporting bugs or issues → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🎨 Feature requests for third-party integrations (for example, from HACS) → Report to the custom integration author/project directly
+        
+        Please provide as much detail as possible to help the community evaluate your request.
+
+  - type: input
+    id: integration_name
+    attributes:
+      label: Integration name
+      description: >
+        The name of the integration, for example MQTT or Philips Hue.
+    validations:
+      required: true
+
+  - type: input
+    id: integration_link
+    attributes:
+      label: Link to integration documentation on our website
+      placeholder: "https://www.home-assistant.io/integrations/..."
+      description: |
+        Providing a link [to the documentation][docs] helps us categorize the feature request.
+
+        [docs]: https://www.home-assistant.io/integrations
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What would you like to improve? Please explain how it works today and how you'd like it to work instead.
+      placeholder: |
+        Example: Currently, the integration only exposes on/off controls for my device. I'd like to have brightness and color temperature controls exposed as well, since my device supports these features.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: Why is this enhancement important? How would you use it?
+      placeholder: |
+        Example: This would allow me to create automations that gradually dim lights at bedtime and adjust color temperature based on time of day.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to device documentation, related issues, or other relevant information.
+      placeholder: |
+        Example: Device manual showing these features - https://example.com/manual.pdf
+    validations:
+      required: false
