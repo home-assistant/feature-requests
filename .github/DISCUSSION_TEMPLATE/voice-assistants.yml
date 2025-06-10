@@ -1,0 +1,57 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting voice assistant enhancements!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting features related to **Assist, voice pipelines, intents, or third-party voice assistants**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🤖 General AI features → Use the "AI & LLMs" category
+        - 🐛 Reporting voice assistant bugs → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What voice assistant capability would you like to add?
+      placeholder: |
+        Example: I'd like Assist to understand follow-up questions in context, like "Turn on the living room lights" followed by "Make them blue."
+    validations:
+      required: true
+
+  - type: textarea
+    id: example_commands
+    attributes:
+      label: Example commands
+      description: Provide examples of voice commands that should work.
+      placeholder: |
+        Example:
+        "Hey Assist, what's the temperature in the bedroom?"
+        "And in the living room?"
+        "Set the warmer one to 72 degrees"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this improve your voice control experience?
+      placeholder: |
+        Example: This would make conversations with Assist more natural and reduce the need to repeat entity names in every command.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Language considerations, hardware setups, or integration with other voice services.
+      placeholder: |
+        Example: This would be especially useful with the M5Stack ATOM Echo devices throughout my home...
+    validations:
+      required: false
