@@ -1,0 +1,55 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting a UI enhancement!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **general UI improvements** that are not specific to dashboards or cards.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 📊 Dashboard or card enhancements → Use the "Dashboards & cards" category
+        - 🐛 Reporting UI bugs → [Report an issue](https://github.com/home-assistant/frontend/issues/new/choose)
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What UI improvement would you like to see? Please specify where in the UI and how it should work.
+      placeholder: |
+        Example: In the Settings > Devices page, I'd like to be able to bulk select multiple devices and perform actions like disabling or removing them all at once.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: Why is this improvement important? How would it help you?
+      placeholder: |
+        Example: When setting up a new integration that creates many devices, I often need to disable several that I don't use. Currently, I have to click into each device individually, which is time-consuming.
+    validations:
+      required: true
+
+  - type: textarea
+    id: visual_examples
+    attributes:
+      label: Visual examples
+      description: Screenshots or mockups showing the current UI and your proposed improvement. (optional)
+      placeholder: |
+        Example: Current UI: [screenshot]
+        Proposed improvement: [mockup or description]
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Additional context, similar features in other software, or related discussions.
+      placeholder: |
+        Example: Gmail has a similar bulk selection feature that works well...
+    validations:
+      required: false
