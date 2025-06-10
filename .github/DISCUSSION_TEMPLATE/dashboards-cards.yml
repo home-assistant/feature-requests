@@ -1,0 +1,121 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to our dashboards!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new dashboard features, cards, strategies, or visual enhancements**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support building dashboards? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 📦 Requesting third-party cards/dashboards to become built-in → If a custom card/dashboard exists (for example, via HACS), we consider the request resolved
+        - 🎨 General UI improvements (not dashboards) → Use the "Other UI enhancements" category
+        - 🐛 Reporting bugs in dashboards → [Report an issue](https://github.com/home-assistant/frontend/issues/new/choose)
+        - 🎨 Issues & feature requests with third-party cards/dashboards (for example, from HACS) → Report to the card/dashboard author/project directly
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: What type of request is this?
+      options:
+        - New card type
+        - New dashboard feature
+        - Enhancement to existing card/feature
+    validations:
+      required: true
+
+  - type: dropdown
+    id: existing_item_name
+    attributes:
+      label: Existing card or feature name
+      description: If this is an enhancement, which card or feature should be improved?
+      options:
+        - Badges: Badges
+        - Card: Alarm panel
+        - Card: Area
+        - Card: Button
+        - Card: Calendar
+        - Card: Clock
+        - Card: Conditional
+        - Card: Energy
+        - Card: Entities
+        - Card: Entity
+        - Card: Entity filter
+        - Card: Gauge
+        - Card: Glance
+        - Card: Grid
+        - Card: Heading
+        - Card: History graph
+        - Card: Horizontal stack
+        - Card: Humidifier
+        - Card: Light
+        - Card: Logbook
+        - Card: Map
+        - Card: Markdown
+        - Card: Media control
+        - Card: Picture
+        - Card: Picture elements
+        - Card: Picture entity
+        - Card: Picture glance
+        - Card: Plant status
+        - Card: Sensor
+        - Card: Statistic
+        - Card: Statistics graph
+        - Card: Thermostat
+        - Card: Tile
+        - Card: To-do list
+        - Card: Vertical stack
+        - Card: Weather forecast
+        - Card: Webpage
+        - Dashboard: Areas
+        - Dashboard: Map
+        - Dashboard: Webpage
+        - View: Masonry
+        - View: Panel
+        - View: Sections
+        - View: Sidebar
+    validations:
+      required: false
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What dashboard or card feature would you like to add or improve?
+      placeholder: |
+        Example: I'd like a native calendar card that can display multiple calendars in a monthly view with color coding for different event types.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would this improvement make your dashboards better?
+      placeholder: |
+        Example: This would allow me to see all family events, work meetings, and home maintenance schedules at a glance without switching between different views.
+    validations:
+      required: true
+
+  - type: textarea
+    id: visual_examples
+    attributes:
+      label: Visual examples
+      description: Mockups, screenshots, or sketches of how this might look. (optional)
+      placeholder: |
+        Example: Here's a mockup I created: [link to image]
+        Or: Similar to how Google Calendar displays events...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to similar implementations, related discussions, or additional context.
+      placeholder: |
+        Example: The Atomic Calendar Revive custom card does something similar - [link]
+    validations:
+      required: false
