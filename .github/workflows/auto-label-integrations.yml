@@ -127,9 +127,11 @@ jobs:
             Rules:
             1. Return ONLY the integration domain name (e.g., "mqtt", "hue", "zwave_js", "homekit")
             2. Use the exact domain key from the provided matches when available
-            3. If multiple matches exist, choose the most likely one based on the description
+            3. If multiple matches exist, choose the most likely one based on the integration title/name
             4. If you cannot determine the exact integration, return "unknown"
             5. Do not include any explanation, just the domain name
+
+            Search this file to get the list of integrations: https://next.home-assistant.io/integrations.json
             
           prompt: |
             Integration name from user: ${{ steps.extract.outputs.integration_name }}
