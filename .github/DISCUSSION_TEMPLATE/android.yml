@@ -1,0 +1,55 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to our Android app!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new features for the Android companion app**.
+        
+        **This is NOT for:**
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🍎 iOS/macOS app features → Use the "iOS & macOS" category
+        - 🐛 Reporting Android app bugs → [Report in the Android repository](https://github.com/home-assistant/android/issues)
+        - 🏠 Core Home Assistant features → Use the appropriate feature category
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Describe the feature
+      description: What would you like the Android app to do?
+      placeholder: |
+        Example: I'd like Quick Settings tiles that can display sensor states, not just toggle switches.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: How would you use this feature in your daily life?
+      placeholder: |
+        Example: I could see the current temperature or humidity right in my Quick Settings panel without opening the app, helping me decide if I need to adjust the thermostat.
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Similar features in other apps or mockups of how this might work. (optional)
+      placeholder: |
+        Example: The Samsung SmartThings app shows sensor values in their Quick Settings tiles.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Device models, Android versions, or other relevant information.
+      placeholder: |
+        Example: This would work great with Android 12's Material You theming...
+    validations:
+      required: false
