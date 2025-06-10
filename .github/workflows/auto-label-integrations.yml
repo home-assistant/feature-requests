@@ -41,18 +41,30 @@ jobs:
             
             console.log(`Event: ${context.eventName}, Action: ${context.payload.action}`);
             console.log(`Body length: ${body.length}`);
+            console.log(`First 300 chars of body: ${body.substring(0, 300)}`);
             
-            // Extract integration name from the form field
-            const integrationMatch = body.match(/(?:^|\n)(?:#+\s*)?Integration name\s*\n+(.+?)(?:\n|$)/);
+            // Extract integration name from the form field - try multiple patterns
+            let integrationMatch = body.match(/(?:^|\n)(?:###\s*)?Integration name\s*\n+(.+?)(?:\n|$)/);
+            if (!integrationMatch) {
+              integrationMatch = body.match(/(?:^|\n)Integration name\s*\n+(.+?)(?:\n|$)/);
+            }
             const integrationName = integrationMatch ? integrationMatch[1].trim() : '';
             
             // Extract integration link - handle "_No response_" as empty
-            const linkMatch = body.match(/(?:^|\n)(?:#+\s*)?Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
+            let linkMatch = body.match(/(?:^|\n)(?:###\s*)?Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
+            if (!linkMatch) {
+              linkMatch = body.match(/(?:^|\n)Link to integration documentation on our website\s*\n+(.+?)(?:\n|$)/);
+            }
             const integrationLink = linkMatch && linkMatch[1].trim() !== '_No response_' ? linkMatch[1].trim() : '';
             
             // Extract enhancement description
-            const descriptionMatch = body.match(/(?:^|\n)(?:#+\s*)?Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:#+\s*)?(?:Use cases|Anything else)|\n##|$)/);
+            let descriptionMatch = body.match(/(?:^|\n)(?:###\s*)?Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:###\s*)?(?:Use cases|Anything else)|\n##|$)/);
+            if (!descriptionMatch) {
+              descriptionMatch = body.match(/(?:^|\n)Describe the enhancement\s*\n+([\s\S]+?)(?=\n(?:Use cases|Anything else)|\n##|$)/);
+            }
             const enhancementDescription = descriptionMatch ? descriptionMatch[1].trim() : '';
+            
+            console.log(`Extracted - Name: "${integrationName}", Link: "${integrationLink}", Description: "${enhancementDescription.substring(0, 50)}..."`);
             
             core.setOutput('integration_name', integrationName);
             core.setOutput('integration_link', integrationLink);
