@@ -1,0 +1,57 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting an enhancement to our template engine!** ❤️
+
+        ### ⚠️ Before you submit
+        
+        This form is for requesting **new template functions, filters, or enhancements** to the Jinja2 template engine.
+        
+        **This is NOT for:**
+        - 🆘 In need for support writing templates? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://discord.gg/c5DvZ4e). You are more likely to get the answer you are looking for in those places.
+        - 🤖 Automation features → Use the "Automations & scripts" category
+        - 🐛 Reporting bugs in templates → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🔌 Integration-specific template data → Use the "Integration enhancements" category
+
+  - type: textarea
+    id: enhancement_description
+    attributes:
+      label: Describe the enhancement
+      description: What template feature, function, or filter would you like to add?
+      placeholder: |
+        Example: I'd like a filter to format durations in human-readable format. For example, converting 3661 seconds to "1 hour 1 minute 1 second".
+    validations:
+      required: true
+
+  - type: textarea
+    id: example_usage
+    attributes:
+      label: Example usage
+      description: Show how you would use this enhancement in your templates.
+      placeholder: |
+        Example: {{ states('sensor.uptime') | int | duration_format }}
+        Would output: "2 days 3 hours 15 minutes"
+      render: yaml
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_workarounds
+    attributes:
+      label: Current workarounds
+      description: How are you achieving this today? (optional)
+      placeholder: |
+        Example: I currently use complex template logic with multiple calculations and if statements to format durations, which is repetitive and error-prone.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Links to similar features in other systems, additional examples, or references.
+      placeholder: |
+        Example: Python's humanize library has similar functionality - [link]
+    validations:
+      required: false
