@@ -380,7 +380,7 @@ jobs:
                 console.log('No valid keywords after sanitization');
               } else {
                 const keywordQueries = sanitizedKeywords.map(kw => `"${kw}"`).join(' OR ');
-                const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${keywordQueries}`;
+                const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${keywordQueries})`;
                 
                 console.log(`Keyword search query: ${searchQuery}`);
               
