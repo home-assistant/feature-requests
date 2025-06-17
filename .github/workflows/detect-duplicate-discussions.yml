@@ -1,0 +1,747 @@
+name: Auto-detect duplicate feature requests
+
+# yamllint disable-line rule:truthy
+on:
+  discussion:
+    types: [labeled, created]
+
+permissions:
+  discussions: write
+  models: read
+
+jobs:
+  detect-duplicates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: |
+      (github.event.discussion.category.slug == 'integration-enhancements' && github.event.action == 'labeled') ||
+      (github.event.action == 'created')
+    
+    steps:
+      - name: Extract discussion details and determine search method
+        id: extract
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            // Debug: Log the event payload
+            console.log('Event name:', context.eventName);
+            console.log('Event action:', context.payload.action);
+            console.log('Event payload keys:', Object.keys(context.payload));
+            
+            const categorySlug = context.payload.discussion.category.slug;
+            const eventAction = context.payload.action;
+            
+            console.log(`Category: ${categorySlug}, Action: ${eventAction}`);
+            
+            // Determine search method based on category and event type
+            if (categorySlug === 'integration-enhancements' && eventAction === 'labeled') {
+              // Check if integration label was added
+              const addedLabel = context.payload.label;
+              if (!addedLabel) {
+                console.log('No label found in labeled event payload');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+              
+              console.log(`Label added: ${addedLabel.name}`);
+              
+              if (!addedLabel.name.startsWith('integration:')) {
+                console.log('Added label is not an integration label, skipping duplicate detection');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+              
+              console.log(`Integration label added: ${addedLabel.name}`);
+              core.setOutput('search_method', 'integration');
+            } else if (eventAction === 'created') {
+              // For all categories on creation
+              console.log('New discussion created, will use keyword search');
+              core.setOutput('search_method', 'keyword');
+            } else {
+              console.log('Event combination not supported for duplicate detection');
+              core.setOutput('should_continue', 'false');
+              return;
+            }
+            
+            let currentDiscussion;
+            let integrationLabels = [];
+            
+            try {
+              const discussion = await github.graphql(`
+                query($nodeId: ID!) {
+                  node(id: $nodeId) {
+                    ... on Discussion {
+                      number
+                      title
+                      body
+                      url
+                      labels(first: 10) {
+                        nodes {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              `, {
+                nodeId: context.payload.discussion.node_id
+              });
+              
+              currentDiscussion = discussion.node;
+              
+              // Check if potential-duplicate label already exists
+              const hasPotentialDuplicateLabel = currentDiscussion.labels.nodes
+                .some(label => label.name === 'potential-duplicate');
+              
+              if (hasPotentialDuplicateLabel) {
+                console.log('Discussion already has potential-duplicate label, skipping duplicate detection');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+              
+              integrationLabels = currentDiscussion.labels.nodes
+                .filter(label => label.name.startsWith('integration:'))
+                .map(label => label.name);
+            } catch (error) {
+              core.error(`Failed to fetch discussion #${context.payload.discussion.number}:`, error.message);
+              core.setOutput('should_continue', 'false');
+              return;
+            }
+            
+            // Check if we've already posted a duplicate detection comment recently
+            let comments;
+            try {
+              comments = await github.graphql(`
+                query($nodeId: ID!) {
+                  node(id: $nodeId) {
+                    ... on Discussion {
+                      comments(first: 10) {
+                        nodes {
+                          body
+                          createdAt
+                          author {
+                            login
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `, {
+                nodeId: context.payload.discussion.node_id
+              });
+            } catch (error) {
+              core.error('Failed to fetch comments:', error.message);
+              // Continue anyway, worst case we might post a duplicate comment
+              comments = { node: { comments: { nodes: [] } } };
+            }
+            
+            // Check if we've already posted a duplicate detection comment
+            const recentDuplicateComment = comments.node.comments.nodes.find(comment => 
+              comment.author && comment.author.login === 'github-actions[bot]' && 
+              comment.body.includes('<!-- workflow: detect-duplicate-discussions -->')
+            );
+            
+            if (recentDuplicateComment) {
+              console.log('Already posted duplicate detection comment, skipping');
+              core.setOutput('should_continue', 'false');
+              return;
+            }
+            
+            // Extract keywords if using keyword search method
+            let keywords = [];
+            const searchMethod = core.getInput('search_method') || (eventAction === 'created' ? 'keyword' : 'integration');
+            if (searchMethod === 'keyword') {
+              // Extract keywords from title and body
+              const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how', 'not', 'no', 'yes']);
+              
+              // Extract meaningful words from title
+              const titleWords = currentDiscussion.title
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 2 && !commonWords.has(word));
+              
+              // Extract meaningful words from first 500 chars of body
+              const bodyPreview = (currentDiscussion.body || '').slice(0, 500);
+              const bodyWords = bodyPreview
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 2 && !commonWords.has(word));
+              
+              // Combine and deduplicate, prioritize title words
+              const allWords = [...new Set([...titleWords, ...bodyWords])];
+              
+              // Take top 5 most meaningful words (title words have priority)
+              keywords = allWords.slice(0, 5);
+              
+              console.log(`Extracted keywords: ${keywords.join(', ')}`);
+            }
+            
+            // Sanitize outputs to prevent injection
+            const sanitizeString = (str) => {
+              if (!str || typeof str !== 'string') return '';
+              // Remove control characters and limit length
+              return str.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').slice(0, 10000);
+            };
+            
+            core.setOutput('should_continue', 'true');
+            core.setOutput('current_number', currentDiscussion.number);
+            core.setOutput('current_title', sanitizeString(currentDiscussion.title));
+            core.setOutput('current_body', sanitizeString(currentDiscussion.body));
+            core.setOutput('current_url', currentDiscussion.url);
+            core.setOutput('integration_labels', JSON.stringify(integrationLabels));
+            core.setOutput('keywords', JSON.stringify(keywords));
+            core.setOutput('category_slug', sanitizeString(categorySlug));
+            
+            console.log(`Current discussion: #${currentDiscussion.number}`);
+            console.log(`Search method: ${searchMethod}`);
+            if (integrationLabels.length > 0) {
+              console.log(`Integration labels: ${integrationLabels.join(', ')}`);
+            }
+            if (keywords.length > 0) {
+              console.log(`Keywords: ${keywords.join(', ')}`);
+            }
+
+      - name: Fetch similar feature requests by integration
+        id: fetch_by_integration
+        if: steps.extract.outputs.should_continue == 'true' && steps.extract.outputs.search_method == 'integration'
+        uses: actions/github-script@v7.0.1
+        env:
+          INTEGRATION_LABELS: ${{ steps.extract.outputs.integration_labels }}
+          CURRENT_NUMBER: ${{ steps.extract.outputs.current_number }}
+        with:
+          script: |
+            const integrationLabels = JSON.parse(process.env.INTEGRATION_LABELS);
+            const currentNumber = parseInt(process.env.CURRENT_NUMBER);
+            
+            if (integrationLabels.length === 0) {
+              console.log('No integration labels found, skipping duplicate detection');
+              core.setOutput('has_similar', 'false');
+              return;
+            }
+            
+            // Use GitHub search API to find discussions with matching integration labels
+            console.log(`Searching for discussions with integration labels: ${integrationLabels.join(', ')}`);
+            
+            // Build search query for discussions with any of the current integration labels
+            // Validate and sanitize integration labels
+            const sanitizedLabels = integrationLabels
+              .filter(label => typeof label === 'string' && label.startsWith('integration:'))
+              .map(label => label.replace(/[^a-zA-Z0-9:-]/g, '')) // Allow only safe characters
+              .slice(0, 10); // Limit number of labels
+            
+            if (sanitizedLabels.length === 0) {
+              console.log('No valid integration labels after sanitization');
+              core.setOutput('has_similar', 'false');
+              return;
+            }
+            
+            const labelQueries = sanitizedLabels.map(label => `label:"${label}"`);
+            let searchQuery;
+            
+            if (labelQueries.length === 1) {
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries[0]}`;
+            } else {
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${labelQueries.join(' OR ')})`;
+            }
+            
+            console.log(`Search query: ${searchQuery}`);
+            
+            let result;
+            try {
+              result = await github.graphql(`
+                query($searchQuery: String!) {
+                  search(query: $searchQuery, type: DISCUSSION, first: 20) {
+                    discussionCount
+                    nodes {
+                      ... on Discussion {
+                        number
+                        title
+                        body
+                        url
+                        createdAt
+                        updatedAt
+                        comments {
+                          totalCount
+                        }
+                        labels(first: 10) {
+                          nodes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `, {
+                searchQuery: searchQuery
+              });
+            } catch (error) {
+              core.error('Failed to search for similar discussions:', error.message);
+              if (error.status === 403 && error.message.includes('rate limit')) {
+                core.error('GitHub API rate limit exceeded');
+              }
+              core.setOutput('has_similar', 'false');
+              return;
+            }
+            
+            // Filter out the current discussion and newer discussions (higher numbers)
+            const similarDiscussions = result.search.nodes
+              .filter(d => 
+                d.number !== currentNumber &&
+                d.number < currentNumber // Only include older discussions (lower numbers)
+              )
+              .map(d => ({
+                number: d.number,
+                title: d.title,
+                body: d.body,
+                url: d.url,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                comments: d.comments.totalCount,
+                labels: d.labels.nodes.map(l => l.name)
+              }));
+            
+            console.log(`Found ${similarDiscussions.length} discussions with matching integration labels`);
+            console.log('Raw similar discussions:', JSON.stringify(similarDiscussions.slice(0, 3), null, 2));
+            
+            if (similarDiscussions.length === 0) {
+              console.log('No similar discussions found, setting has_similar to false');
+              core.setOutput('has_similar', 'false');
+              return;
+            }
+            
+            console.log('Similar discussions found, setting has_similar to true');
+            core.setOutput('has_similar', 'true');
+            
+            // Clean the discussion data to prevent JSON parsing issues
+            const cleanedDiscussions = similarDiscussions.slice(0, 15).map(d => {
+              // Handle body with improved truncation and null handling
+              let cleanBody = '';
+              if (d.body && typeof d.body === 'string') {
+                // Remove control characters
+                const cleaned = d.body.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+                // Truncate to 1000 characters and add ellipsis if needed
+                cleanBody = cleaned.length > 1000
+                  ? cleaned.substring(0, 1000) + '...'
+                  : cleaned;
+              }
+              
+              return {
+                number: d.number,
+                title: d.title.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''), // Remove control characters
+                body: cleanBody,
+                url: d.url,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                comments: d.comments,
+                labels: d.labels
+              };
+            });
+            
+            console.log(`Cleaned discussions count: ${cleanedDiscussions.length}`);
+            console.log('First cleaned discussion:', JSON.stringify(cleanedDiscussions[0], null, 2));
+            
+            core.setOutput('similar_discussions', JSON.stringify(cleanedDiscussions));
+
+      - name: Fetch similar feature requests by keywords
+        id: fetch_by_keywords
+        if: steps.extract.outputs.should_continue == 'true' && steps.extract.outputs.search_method == 'keyword'
+        uses: actions/github-script@v7.0.1
+        env:
+          KEYWORDS: ${{ steps.extract.outputs.keywords }}
+          CURRENT_NUMBER: ${{ steps.extract.outputs.current_number }}
+          CATEGORY_SLUG: ${{ steps.extract.outputs.category_slug }}
+        with:
+          script: |
+            const keywords = JSON.parse(process.env.KEYWORDS);
+            const currentNumber = parseInt(process.env.CURRENT_NUMBER);
+            const categorySlug = process.env.CATEGORY_SLUG;
+            
+            if (keywords.length === 0) {
+              console.log('No keywords extracted, will fetch top discussions from category');
+            }
+            
+            let keywordResults = [];
+            let categoryTopResults = [];
+            
+            // Search by keywords if available
+            if (keywords.length > 0) {
+              // Validate and sanitize keywords
+              const sanitizedKeywords = keywords
+                .filter(kw => typeof kw === 'string' && kw.length > 0)
+                .map(kw => kw.replace(/[^a-zA-Z0-9_-]/g, '')) // Allow only safe characters
+                .filter(kw => kw.length >= 2) // Minimum length
+                .slice(0, 5); // Limit number of keywords
+              
+              if (sanitizedKeywords.length === 0) {
+                console.log('No valid keywords after sanitization');
+              } else {
+                const keywordQueries = sanitizedKeywords.map(kw => `"${kw}"`).join(' OR ');
+                const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${keywordQueries}`;
+                
+                console.log(`Keyword search query: ${searchQuery}`);
+              
+              try {
+                const keywordSearch = await github.graphql(`
+                  query($searchQuery: String!) {
+                    search(query: $searchQuery, type: DISCUSSION, first: 15) {
+                      discussionCount
+                      nodes {
+                        ... on Discussion {
+                          number
+                          title
+                          body
+                          url
+                          createdAt
+                          updatedAt
+                          comments {
+                            totalCount
+                          }
+                          labels(first: 10) {
+                            nodes {
+                              name
+                            }
+                          }
+                          category {
+                            slug
+                          }
+                        }
+                      }
+                    }
+                  }
+                `, {
+                  searchQuery: searchQuery
+                });
+                
+                keywordResults = keywordSearch.search.nodes.filter(d => 
+                  d.number !== currentNumber && 
+                  d.number < currentNumber &&
+                  d.category && d.category.slug === categorySlug
+                );
+                } catch (error) {
+                  core.error('Failed to search by keywords:', error.message);
+                }
+              }
+            }
+            
+            // Also fetch top discussions from the same category
+            try {
+              // First get the category ID
+              const categoryQuery = await github.graphql(`
+                query($owner: String!, $name: String!) {
+                  repository(owner: $owner, name: $name) {
+                    discussionCategories(first: 20) {
+                      nodes {
+                        id
+                        slug
+                      }
+                    }
+                  }
+                }
+              `, {
+                owner: context.repo.owner,
+                name: context.repo.repo
+              });
+              
+              const category = categoryQuery.repository.discussionCategories.nodes.find(c => c.slug === categorySlug);
+              
+              if (category) {
+                const topDiscussions = await github.graphql(`
+                  query($owner: String!, $name: String!, $categoryId: ID!) {
+                    repository(owner: $owner, name: $name) {
+                      discussions(first: 10, categoryId: $categoryId, orderBy: {field: COMMENTS, direction: DESC}) {
+                        nodes {
+                          number
+                          title
+                          body
+                          url
+                          createdAt
+                          updatedAt
+                          comments {
+                            totalCount
+                          }
+                          labels(first: 10) {
+                            nodes {
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                `, {
+                  owner: context.repo.owner,
+                  name: context.repo.repo,
+                  categoryId: category.id
+                });
+                
+                categoryTopResults = topDiscussions.repository.discussions.nodes.filter(d => 
+                  d.number !== currentNumber && 
+                  d.number < currentNumber
+                );
+              }
+            } catch (error) {
+              core.error('Failed to fetch top discussions from category:', error.message);
+            }
+            
+            // Merge and deduplicate results
+            const allResults = [...keywordResults];
+            const existingNumbers = new Set(keywordResults.map(d => d.number));
+            
+            for (const discussion of categoryTopResults) {
+              if (!existingNumbers.has(discussion.number)) {
+                allResults.push(discussion);
+              }
+            }
+            
+            // Sort by comment count and limit to 20
+            const similarDiscussions = allResults
+              .sort((a, b) => b.comments.totalCount - a.comments.totalCount)
+              .slice(0, 20)
+              .map(d => ({
+                number: d.number,
+                title: d.title,
+                body: d.body,
+                url: d.url,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                comments: d.comments.totalCount,
+                labels: d.labels.nodes.map(l => l.name)
+              }));
+            
+            console.log(`Found ${keywordResults.length} keyword matches and ${categoryTopResults.length} top discussions`);
+            console.log(`Total similar discussions: ${similarDiscussions.length}`);
+            
+            if (similarDiscussions.length === 0) {
+              console.log('No similar discussions found');
+              core.setOutput('has_similar', 'false');
+              return;
+            }
+            
+            core.setOutput('has_similar', 'true');
+            
+            // Clean the discussion data to prevent JSON parsing issues
+            const cleanedDiscussions = similarDiscussions.map(d => {
+              let cleanBody = '';
+              if (d.body && typeof d.body === 'string') {
+                const cleaned = d.body.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+                cleanBody = cleaned.length > 1000
+                  ? cleaned.substring(0, 1000) + '...'
+                  : cleaned;
+              }
+              
+              return {
+                number: d.number,
+                title: d.title.replace(/[\u0000-\u001F\u007F-\u009F]/g, ''),
+                body: cleanBody,
+                url: d.url,
+                createdAt: d.createdAt,
+                updatedAt: d.updatedAt,
+                comments: d.comments,
+                labels: d.labels
+              };
+            });
+            
+            core.setOutput('similar_discussions', JSON.stringify(cleanedDiscussions));
+
+      - name: Detect duplicates using AI
+        id: ai_detection
+        if: steps.extract.outputs.should_continue == 'true' && (steps.fetch_by_integration.outputs.has_similar == 'true' || steps.fetch_by_keywords.outputs.has_similar == 'true')
+        uses: actions/ai-inference@v1.1.0
+        env:
+          CURRENT_TITLE: ${{ steps.extract.outputs.current_title }}
+          CURRENT_BODY: ${{ steps.extract.outputs.current_body }}
+          SIMILAR_DISCUSSIONS: ${{ steps.fetch_by_integration.outputs.similar_discussions || steps.fetch_by_keywords.outputs.similar_discussions }}
+        with:
+          model: openai/gpt-4o-mini
+          system-prompt: |
+            You are a Home Assistant feature request duplicate detector. Your task is to identify potential duplicate feature requests based on their content. Note that we use GitHub Discussions to handle feature requests, so "discussions" and "feature requests" refer to the same thing.
+            
+            Important considerations:
+            - Recently updated discussions may indicate ongoing work or discussion
+            - Discussions with more comments are generally more relevant and active
+            - Higher comment count often indicates community engagement and importance
+            - Consider the time between discussions - very old discussions may have different contexts
+            
+            Rules for identifying duplicates:
+            1. A duplicate feature request must ask for fundamentally the SAME functionality
+            2. Different approaches to achieve the same end goal CAN be duplicates
+            3. Feature requests for the same integration but DIFFERENT features are NOT duplicates
+            4. Similar use cases with different underlying requirements are NOT duplicates
+            5. Use an 80%+ similarity threshold for matching (more lenient than issues, but still meaningful)
+            6. When in doubt, lean towards NOT marking as duplicate
+            7. Prioritize discussions with higher comment counts as they indicate more activity/relevance
+            8. Return ONLY a JSON array of discussion numbers that are potential duplicates
+            9. If no duplicates are found, return an empty array: []
+            10. Maximum 5 potential duplicates, prioritize discussions with comments
+            11. Consider the age of discussions - prefer recent duplicates over very old ones
+            
+            Remember: Feature requests can have more overlap than bug reports, but should still represent the same core functionality request to be considered duplicates.
+            
+            Example response format:
+            [1234, 5678, 9012]
+            
+          prompt: |
+            Current feature request (just created):
+            Title: ${CURRENT_TITLE}
+            Body: ${CURRENT_BODY}
+            
+            Similar feature requests to compare against (each includes creation date, last update, and comment count):
+            ${SIMILAR_DISCUSSIONS}
+            
+            Analyze these feature requests and identify which ones are potential duplicates of the current request. Consider how recently they were updated and their comment count (higher = more relevant).
+          
+          max-tokens: 100
+
+      - name: Post duplicate detection results
+        id: post_results
+        if: steps.extract.outputs.should_continue == 'true' && (steps.fetch_by_integration.outputs.has_similar == 'true' || steps.fetch_by_keywords.outputs.has_similar == 'true')
+        uses: actions/github-script@v7.0.1
+        env:
+          AI_RESPONSE: ${{ steps.ai_detection.outputs.response }}
+          SIMILAR_DISCUSSIONS: ${{ steps.fetch_by_integration.outputs.similar_discussions || steps.fetch_by_keywords.outputs.similar_discussions }}
+        with:
+          script: |
+            const aiResponse = process.env.AI_RESPONSE;
+            
+            console.log('Raw AI response:', JSON.stringify(aiResponse));
+            
+            let duplicateNumbers = [];
+            try {
+              // Clean the response of any potential control characters
+              const cleanResponse = aiResponse.trim().replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+              console.log('Cleaned AI response:', cleanResponse);
+              
+              duplicateNumbers = JSON.parse(cleanResponse);
+              
+              // Ensure it's an array and contains only numbers
+              if (!Array.isArray(duplicateNumbers)) {
+                console.log('AI response is not an array, trying to extract numbers');
+                const numberMatches = cleanResponse.match(/\d+/g);
+                duplicateNumbers = numberMatches ? numberMatches.map(n => parseInt(n)) : [];
+              }
+              
+              // Filter to only valid numbers
+              duplicateNumbers = duplicateNumbers.filter(n => typeof n === 'number' && !isNaN(n));
+              
+            } catch (error) {
+              console.log('Failed to parse AI response as JSON:', error.message);
+              console.log('Raw response:', aiResponse);
+              
+              // Fallback: try to extract numbers from the response
+              const numberMatches = aiResponse.match(/\d+/g);
+              duplicateNumbers = numberMatches ? numberMatches.map(n => parseInt(n)) : [];
+              console.log('Extracted numbers as fallback:', duplicateNumbers);
+            }
+            
+            if (!Array.isArray(duplicateNumbers) || duplicateNumbers.length === 0) {
+              console.log('No duplicates detected by AI');
+              return;
+            }
+            
+            console.log(`AI detected ${duplicateNumbers.length} potential duplicates: ${duplicateNumbers.join(', ')}`);
+            
+            // Get details of detected duplicates
+            const similarDiscussions = JSON.parse(process.env.SIMILAR_DISCUSSIONS);
+            const duplicates = similarDiscussions.filter(d => duplicateNumbers.includes(d.number));
+            
+            if (duplicates.length === 0) {
+              console.log('No matching discussions found for detected numbers');
+              return;
+            }
+            
+            // Create comment with duplicate detection results
+            const duplicateLinks = duplicates.map(d => `- [#${d.number}: ${d.title}](${d.url})`).join('\n');
+            
+            const commentBody = [
+              '<!-- workflow: detect-duplicate-discussions -->',
+              '### 🔍 **Potential duplicate detection**',
+              '',
+              'I\'ve analyzed similar feature requests and found the following potential duplicates:',
+              '',
+              duplicateLinks,
+              '',
+              '**What to do next:**',
+              '1. Please review these discussions to see if they match your request',
+              '2. If you find an existing request that covers your needs:',
+              '   - Consider closing this discussion',
+              '   - Add your thoughts/vote on the existing request instead',
+              '3. If your request is different or adds new aspects, please clarify how it differs',
+              '',
+              'This helps keep our feature requests organized and ensures similar requests are consolidated for better visibility.',
+              '',
+              '*This message was generated automatically by our duplicate detection system.*'
+            ].join('\n');
+
+            try {
+              await github.graphql(`
+                mutation($discussionId: ID!, $body: String!) {
+                  addDiscussionComment(input: {
+                    discussionId: $discussionId,
+                    body: $body
+                  }) {
+                    comment {
+                      id
+                    }
+                  }
+                }
+              `, {
+                discussionId: context.payload.discussion.node_id,
+                body: commentBody
+              });
+              
+              console.log(`Posted duplicate detection comment with ${duplicates.length} potential duplicates`);
+              
+              // Add the potential-duplicate label
+              try {
+                const labelsQuery = await github.graphql(`
+                  query($owner: String!, $name: String!) {
+                    repository(owner: $owner, name: $name) {
+                      labels(first: 100, query: "potential-duplicate") {
+                        nodes {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                `, {
+                  owner: context.repo.owner,
+                  name: context.repo.repo
+                });
+                
+                const potentialDuplicateLabel = labelsQuery.repository.labels.nodes
+                  .find(label => label.name === 'potential-duplicate');
+                
+                if (potentialDuplicateLabel) {
+                  await github.graphql(`
+                    mutation($labelableId: ID!, $labelIds: [ID!]!) {
+                      addLabelsToLabelable(input: {
+                        labelableId: $labelableId,
+                        labelIds: $labelIds
+                      }) {
+                        clientMutationId
+                      }
+                    }
+                  `, {
+                    labelableId: context.payload.discussion.node_id,
+                    labelIds: [potentialDuplicateLabel.id]
+                  });
+                  
+                  console.log('Added potential-duplicate label to the discussion');
+                } else {
+                  console.log('potential-duplicate label not found in repository');
+                }
+              } catch (labelError) {
+                console.log('Failed to add potential-duplicate label:', labelError.message);
+              }
+            } catch (error) {
+              core.error('Failed to post duplicate detection comment or add label:', error.message);
+              if (error.status === 403) {
+                core.error('Permission denied or rate limit exceeded');
+              }
+              // Don't throw - we've done the analysis, just couldn't post the result
+            }
