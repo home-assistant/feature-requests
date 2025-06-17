@@ -449,10 +449,11 @@ jobs:
               const category = categoryQuery.repository.discussionCategories.nodes.find(c => c.slug === categorySlug);
               
               if (category) {
+                console.log(`Found category ${categorySlug} with ID ${category.id}`);
                 const topDiscussions = await github.graphql(`
                   query($owner: String!, $name: String!, $categoryId: ID!) {
                     repository(owner: $owner, name: $name) {
-                      discussions(first: 10, categoryId: $categoryId, orderBy: {field: COMMENTS, direction: DESC}) {
+                      discussions(first: 10, categoryId: $categoryId, orderBy: {field: UPDATED_AT, direction: DESC}) {
                         nodes {
                           number
                           title
@@ -482,9 +483,14 @@ jobs:
                   d.number !== currentNumber && 
                   d.number < currentNumber
                 );
+                console.log(`Found ${categoryTopResults.length} top discussions from category`);
+              } else {
+                console.log(`Category ${categorySlug} not found`);
               }
             } catch (error) {
-              core.error('Failed to fetch top discussions from category:', error.message);
+              console.log('Failed to fetch top discussions from category:', error.message);
+              // Don't use core.error() as it might cause the step to fail
+              // Continue with just keyword results
             }
             
             // Merge and deduplicate results
