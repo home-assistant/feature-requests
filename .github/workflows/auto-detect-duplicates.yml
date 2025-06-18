@@ -552,10 +552,6 @@ jobs:
         id: ai_detection
         if: steps.extract.outputs.should_continue == 'true' && (steps.fetch_by_integration.outputs.has_similar == 'true' || steps.fetch_by_keywords.outputs.has_similar == 'true')
         uses: actions/ai-inference@v1.1.0
-        env:
-          CURRENT_TITLE: ${{ steps.extract.outputs.current_title }}
-          CURRENT_BODY: ${{ steps.extract.outputs.current_body }}
-          SIMILAR_DISCUSSIONS: ${{ steps.fetch_by_integration.outputs.similar_discussions || steps.fetch_by_keywords.outputs.similar_discussions }}
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
@@ -587,11 +583,11 @@ jobs:
             
           prompt: |
             Current feature request (just created):
-            Title: ${CURRENT_TITLE}
-            Body: ${CURRENT_BODY}
+            Title: ${{ steps.extract.outputs.current_title }}
+            Body: ${{ steps.extract.outputs.current_body }}
             
             Similar feature requests to compare against (each includes creation date, last update, and comment count):
-            ${SIMILAR_DISCUSSIONS}
+            ${{ steps.fetch_by_integration.outputs.similar_discussions || steps.fetch_by_keywords.outputs.similar_discussions }}
             
             Analyze these feature requests and identify which ones are potential duplicates of the current request. Consider how recently they were updated and their comment count (higher = more relevant).
           
