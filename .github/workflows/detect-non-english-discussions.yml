@@ -313,12 +313,11 @@ jobs:
                 '',
                 '**To the original author:**',
                 '- Your feature request has been translated to help more people understand and contribute',
-                '- You can continue commenting in your preferred language - we encourage community members to help with translations',
+                '- Please continue the conversation in English to ensure everyone can participate',
                 '- The essence of your request has been preserved in the translation',
                 '',
                 '**To the community:**',
                 '- Please be patient with any translation imperfections',
-                '- Feel free to help clarify or improve translations in the comments',
                 '- Vote and comment to show your support for this feature request',
                 '',
                 'Thank you for contributing to Home Assistant! 🏠'
