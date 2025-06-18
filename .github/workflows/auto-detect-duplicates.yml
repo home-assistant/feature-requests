@@ -242,9 +242,9 @@ jobs:
             let searchQuery;
             
             if (labelQueries.length === 1) {
-              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries[0]}`;
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion ${labelQueries[0]} -number:${currentNumber}`;
             } else {
-              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${labelQueries.join(' OR ')})`;
+              searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${labelQueries.join(' OR ')}) -number:${currentNumber}`;
             }
             
             console.log(`Search query: ${searchQuery}`);
@@ -253,7 +253,7 @@ jobs:
             try {
               result = await github.graphql(`
                 query($searchQuery: String!) {
-                  search(query: $searchQuery, type: DISCUSSION, first: 20) {
+                  search(query: $searchQuery, type: DISCUSSION, first: 30) {
                     discussionCount
                     nodes {
                       ... on Discussion {
@@ -287,12 +287,9 @@ jobs:
               return;
             }
             
-            // Filter out the current discussion and newer discussions (higher numbers)
+            // Filter out newer discussions (higher numbers) - only older discussions can be duplicates
             const similarDiscussions = result.search.nodes
-              .filter(d => 
-                d.number !== currentNumber &&
-                d.number < currentNumber // Only include older discussions (lower numbers)
-              )
+              .filter(d => d.number < currentNumber)
               .map(d => ({
                 number: d.number,
                 title: d.title,
@@ -380,14 +377,14 @@ jobs:
                 console.log('No valid keywords after sanitization');
               } else {
                 const keywordQueries = sanitizedKeywords.map(kw => `"${kw}"`).join(' OR ');
-                const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${keywordQueries})`;
+                const searchQuery = `repo:${context.repo.owner}/${context.repo.repo} is:discussion (${keywordQueries}) -number:${currentNumber}`;
                 
                 console.log(`Keyword search query: ${searchQuery}`);
               
               try {
                 const keywordSearch = await github.graphql(`
                   query($searchQuery: String!) {
-                    search(query: $searchQuery, type: DISCUSSION, first: 15) {
+                    search(query: $searchQuery, type: DISCUSSION, first: 30) {
                       discussionCount
                       nodes {
                         ... on Discussion {
@@ -417,7 +414,6 @@ jobs:
                 });
                 
                 keywordResults = keywordSearch.search.nodes.filter(d => 
-                  d.number !== currentNumber && 
                   d.number < currentNumber &&
                   d.category && d.category.slug === categorySlug
                 );
@@ -480,7 +476,6 @@ jobs:
                 });
                 
                 categoryTopResults = topDiscussions.repository.discussions.nodes.filter(d => 
-                  d.number !== currentNumber && 
                   d.number < currentNumber
                 );
                 console.log(`Found ${categoryTopResults.length} top discussions from category`);
