@@ -1,0 +1,396 @@
+name: Auto-detect non-English discussions
+
+# yamllint disable-line rule:truthy
+on:
+  discussion:
+    types: [created]
+
+permissions:
+  discussions: write
+  models: read
+
+jobs:
+  detect-language:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check discussion language
+        id: detect_language
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            // Get the discussion details from the event payload
+            const discussion = context.payload.discussion;
+            const discussionNumber = discussion.number;
+            const discussionTitle = discussion.title || '';
+            const discussionBody = discussion.body || '';
+            const userType = discussion.user.type;
+
+            // Skip language detection for bot users
+            if (userType === 'Bot') {
+              console.log('Skipping language detection for bot user');
+              core.setOutput('should_continue', 'false');
+              return;
+            }
+
+            console.log(`Checking language for discussion #${discussionNumber}`);
+            console.log(`Title: ${discussionTitle}`);
+
+            // Combine title and body for language detection
+            const fullText = `${discussionTitle}\n\n${discussionBody}`;
+
+            // Check if the text is too short to reliably detect language
+            if (fullText.trim().length < 20) {
+              console.log('Text too short for reliable language detection');
+              core.setOutput('should_continue', 'false'); // Skip processing for very short text
+              return;
+            }
+
+            // Check if discussion already has non-english label or comment
+            try {
+              const discussionDetails = await github.graphql(`
+                query($nodeId: ID!) {
+                  node(id: $nodeId) {
+                    ... on Discussion {
+                      labels(first: 10) {
+                        nodes {
+                          name
+                        }
+                      }
+                      comments(first: 10) {
+                        nodes {
+                          body
+                          author {
+                            login
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `, {
+                nodeId: discussion.node_id
+              });
+
+              // Check if already has non-english label
+              const hasNonEnglishLabel = discussionDetails.node.labels.nodes
+                .some(label => label.name === 'non-english');
+              
+              if (hasNonEnglishLabel) {
+                console.log('Discussion already has non-english label, skipping detection');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+
+              // Check if we've already posted a language detection comment
+              const hasLanguageComment = discussionDetails.node.comments.nodes.some(comment => 
+                comment.author && comment.author.login === 'github-actions[bot]' && 
+                comment.body.includes('<!-- workflow: detect-non-english-discussions -->')
+              );
+              
+              if (hasLanguageComment) {
+                console.log('Already posted language detection comment, skipping');
+                core.setOutput('should_continue', 'false');
+                return;
+              }
+            } catch (error) {
+              console.log('Error checking existing labels/comments:', error.message);
+              // Continue anyway
+            }
+
+            // Sanitize outputs to prevent injection
+            const sanitizeString = (str) => {
+              if (!str || typeof str !== 'string') return '';
+              // Remove control characters and limit length
+              return str.replace(/[\u0000-\u001F\u007F-\u009F]/g, '').slice(0, 10000);
+            };
+
+            core.setOutput('discussion_number', discussionNumber);
+            core.setOutput('discussion_node_id', discussion.node_id);
+            core.setOutput('discussion_text', sanitizeString(fullText));
+            core.setOutput('discussion_url', discussion.html_url);
+            core.setOutput('should_continue', 'true');
+
+      - name: Detect language using AI
+        id: ai_language_detection
+        if: steps.detect_language.outputs.should_continue == 'true'
+        uses: actions/ai-inference@v1.1.0
+        with:
+          model: openai/gpt-4o-mini
+          system-prompt: |
+            You are a language detection system. Your task is to determine if the provided text is written in English or another language.
+
+            Rules:
+            1. Analyze the text and determine the primary language of the USER'S DESCRIPTION only
+            2. IGNORE markdown headers (lines starting with #, ##, ###, etc.) as these are from issue templates, not user input
+            3. IGNORE all code blocks (text between ``` or ` markers) as they may contain system-generated error messages in other languages
+            4. IGNORE error messages, logs, and system output even if not in code blocks - these often appear in the user's system language
+            5. Consider technical terms, code snippets, URLs, and file paths as neutral (they don't indicate non-English)
+            6. Focus ONLY on the actual sentences and descriptions written by the user explaining their feature request
+            7. If the user's explanation/description is in English but includes non-English error messages or logs, consider it ENGLISH
+            8. Return ONLY a JSON object with two fields:
+               - "is_english": boolean (true if the user's description is primarily in English, false otherwise)
+               - "detected_language": string (the name of the detected language, e.g., "English", "Spanish", "Chinese", etc.)
+            9. Be lenient - if the user's explanation is in English with non-English system output, it's still English
+            10. Common programming terms, error messages, and technical jargon should not be considered as non-English
+            11. If you cannot reliably determine the language, set detected_language to "undefined"
+
+            Example response:
+            {"is_english": false, "detected_language": "Spanish"}
+
+          prompt: |
+            Please analyze the following feature request text and determine if it is written in English:
+
+            ${{ steps.detect_language.outputs.discussion_text }}
+
+          max-tokens: 50
+
+      - name: Process non-English discussions
+        id: process_language
+        if: steps.detect_language.outputs.should_continue == 'true'
+        uses: actions/github-script@v7.0.1
+        env:
+          AI_RESPONSE: ${{ steps.ai_language_detection.outputs.response }}
+          DISCUSSION_NUMBER: ${{ steps.detect_language.outputs.discussion_number }}
+          DISCUSSION_NODE_ID: ${{ steps.detect_language.outputs.discussion_node_id }}
+          DISCUSSION_URL: ${{ steps.detect_language.outputs.discussion_url }}
+        with:
+          script: |
+            const discussionNumber = parseInt(process.env.DISCUSSION_NUMBER);
+            const discussionNodeId = process.env.DISCUSSION_NODE_ID;
+            const discussionUrl = process.env.DISCUSSION_URL;
+            const aiResponse = process.env.AI_RESPONSE;
+
+            console.log('AI language detection response:', aiResponse);
+
+            let languageResult;
+            try {
+              languageResult = JSON.parse(aiResponse.trim());
+
+              // Validate the response structure
+              if (!languageResult || typeof languageResult.is_english !== 'boolean') {
+                throw new Error('Invalid response structure');
+              }
+            } catch (error) {
+              core.error(`Failed to parse AI response: ${error.message}`);
+              console.log('Raw AI response:', aiResponse);
+
+              // Log more details for debugging
+              core.warning('Defaulting to English due to parsing error');
+
+              // Default to English if we can't parse the response
+              return;
+            }
+
+            if (languageResult.is_english) {
+              console.log('Discussion is in English, no action needed');
+              return;
+            }
+
+            // If language is undefined or not detected, skip processing
+            if (!languageResult.detected_language || languageResult.detected_language === 'undefined') {
+              console.log('Language could not be determined, skipping processing');
+              return;
+            }
+
+            console.log(`Discussion detected as non-English: ${languageResult.detected_language}`);
+
+            // Store the detected language for the translation step
+            core.setOutput('detected_language', languageResult.detected_language);
+            core.setOutput('should_translate', 'true');
+
+      - name: Translate non-English discussion
+        id: translate_discussion
+        if: steps.detect_language.outputs.should_continue == 'true' && steps.process_language.outputs.should_translate == 'true'
+        uses: actions/ai-inference@v1.1.0
+        with:
+          model: openai/gpt-4o-mini
+          system-prompt: |
+            You are a professional translator helping to make feature requests accessible to the global Home Assistant community. Your task is to translate the provided text from the detected language to English while preserving all technical details, markdown formatting, and the original intent.
+
+            Rules:
+            1. Translate the entire text to English, maintaining the original meaning and intent
+            2. Preserve all markdown formatting (headers, lists, code blocks, links, etc.)
+            3. Keep technical terms, error messages, and code snippets exactly as they are
+            4. Maintain any references to Home Assistant components, integrations, or features
+            5. If the text contains mixed languages, translate only the non-English parts
+            6. Return a JSON object with two fields:
+               - "translated_title": the translated title
+               - "translated_body": the translated body
+            7. If translation fails or text is already mostly English, return the original text
+            8. Be careful to preserve any issue template structure
+
+            Example response:
+            {"translated_title": "Add support for energy monitoring in smart plugs", "translated_body": "## Description\nI would like to request..."}
+
+          prompt: |
+            Please translate the following feature request from ${{ steps.process_language.outputs.detected_language }} to English:
+
+            Title: ${{ github.event.discussion.title }}
+
+            Body:
+            ${{ github.event.discussion.body }}
+
+          max-tokens: 4000
+
+      - name: Update discussion and notify user
+        if: steps.detect_language.outputs.should_continue == 'true' && steps.process_language.outputs.should_translate == 'true'
+        uses: actions/github-script@v7.0.1
+        env:
+          TRANSLATION_RESPONSE: ${{ steps.translate_discussion.outputs.response }}
+          DETECTED_LANGUAGE: ${{ steps.process_language.outputs.detected_language }}
+          DISCUSSION_NODE_ID: ${{ steps.detect_language.outputs.discussion_node_id }}
+          ORIGINAL_TITLE: ${{ github.event.discussion.title }}
+          ORIGINAL_BODY: ${{ github.event.discussion.body }}
+        with:
+          script: |
+            const translationResponse = process.env.TRANSLATION_RESPONSE;
+            const detectedLanguage = process.env.DETECTED_LANGUAGE;
+            const discussionNodeId = process.env.DISCUSSION_NODE_ID;
+            const originalTitle = process.env.ORIGINAL_TITLE;
+            const originalBody = process.env.ORIGINAL_BODY || '';
+
+            console.log('Translation response received');
+
+            let translationResult;
+            try {
+              translationResult = JSON.parse(translationResponse.trim());
+
+              // Validate the response structure
+              if (!translationResult || !translationResult.translated_title || !translationResult.translated_body) {
+                throw new Error('Invalid translation response structure');
+              }
+            } catch (error) {
+              core.error(`Failed to parse translation response: ${error.message}`);
+              console.log('Raw translation response:', translationResponse);
+              return;
+            }
+
+            try {
+              // Update the discussion with translated content
+              await github.graphql(`
+                mutation($discussionId: ID!, $title: String!, $body: String!) {
+                  updateDiscussion(input: {
+                    discussionId: $discussionId,
+                    title: $title,
+                    body: $body
+                  }) {
+                    discussion {
+                      id
+                    }
+                  }
+                }
+              `, {
+                discussionId: discussionNodeId,
+                title: translationResult.translated_title,
+                body: translationResult.translated_body
+              });
+
+              console.log('Updated discussion with translated content');
+
+              // Post comment explaining the automatic translation
+              const commentBody = [
+                '<!-- workflow: detect-non-english-discussions -->',
+                '### 🌐 Automatic Translation Applied',
+                '',
+                `This feature request was originally written in **${detectedLanguage}** and has been automatically translated to English to help our global community participate in the discussion.`,
+                '',
+                '**Original content has been preserved below:**',
+                '',
+                '<details>',
+                '<summary>Click to see original text</summary>',
+                '',
+                '### Original Title',
+                '```',
+                originalTitle,
+                '```',
+                '',
+                '### Original Body',
+                '```',
+                originalBody,
+                '```',
+                '</details>',
+                '',
+                '**To the original author:**',
+                '- Your feature request has been translated to help more people understand and contribute',
+                '- You can continue commenting in your preferred language - we encourage community members to help with translations',
+                '- The essence of your request has been preserved in the translation',
+                '',
+                '**To the community:**',
+                '- Please be patient with any translation imperfections',
+                '- Feel free to help clarify or improve translations in the comments',
+                '- Vote and comment to show your support for this feature request',
+                '',
+                'Thank you for contributing to Home Assistant! 🏠'
+              ].join('\n');
+
+              // Add comment to discussion
+              await github.graphql(`
+                mutation($discussionId: ID!, $body: String!) {
+                  addDiscussionComment(input: {
+                    discussionId: $discussionId,
+                    body: $body
+                  }) {
+                    comment {
+                      id
+                    }
+                  }
+                }
+              `, {
+                discussionId: discussionNodeId,
+                body: commentBody
+              });
+
+              console.log('Posted translation notification comment');
+
+              // Add translated label instead of non-english
+              try {
+                // First, get the label ID for 'translated'
+                const labelsQuery = await github.graphql(`
+                  query($owner: String!, $name: String!) {
+                    repository(owner: $owner, name: $name) {
+                      labels(first: 100, query: "translated") {
+                        nodes {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                `, {
+                  owner: context.repo.owner,
+                  name: context.repo.repo
+                });
+                
+                const translatedLabel = labelsQuery.repository.labels.nodes
+                  .find(label => label.name === 'translated');
+                
+                if (translatedLabel) {
+                  await github.graphql(`
+                    mutation($labelableId: ID!, $labelIds: [ID!]!) {
+                      addLabelsToLabelable(input: {
+                        labelableId: $labelableId,
+                        labelIds: $labelIds
+                      }) {
+                        clientMutationId
+                      }
+                    }
+                  `, {
+                    labelableId: discussionNodeId,
+                    labelIds: [translatedLabel.id]
+                  });
+                  
+                  console.log('Added translated label to the discussion');
+                } else {
+                  console.log('translated label not found in repository');
+                }
+              } catch (labelError) {
+                console.log('Failed to add translated label:', labelError.message);
+              }
+
+            } catch (error) {
+              core.error('Failed to update discussion with translation:', error.message);
+              if (error.status === 403) {
+                core.error('Permission denied or rate limit exceeded');
+              }
+            }
