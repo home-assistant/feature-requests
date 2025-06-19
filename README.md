@@ -15,7 +15,7 @@ Looking to report a bug or issue instead?
 Please use the correct issue tracker depending on the part of the project:
 
 - [Core](https://github.com/home-assistant/core/issues) – for most integrations, automation, and core logic
-- [Frontend](https://github.com/home-assistant/frontend/issues) – for user interface bugs and feature requests
+- [Frontend](https://github.com/home-assistant/frontend/issues) – for user interface bugs
 - [Android app](https://github.com/home-assistant/android/issues)
 - [iOS app](https://github.com/home-assistant/iOS/issues)
 - [Operating System](https://github.com/home-assistant/operating-system/issues)
