@@ -1,0 +1,69 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for suggesting improvements to Home Assistant's core!** 🏗️
+
+        ### 🔧 This is for foundational improvements
+        
+        This form is for **architectural and core functionality improvements** that enhance Home Assistant's foundation.
+        
+        Perfect for:
+        - Performance and efficiency improvements
+        - Core architecture enhancements
+        - Fundamental system capabilities
+        - Infrastructure and platform improvements
+        
+        **This is NOT for:**
+        - 🐛 Reporting bugs or issues with Home Assistant → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
+        - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
+        - ➕ Adding device compatibility or new features to existing integrations → [Use the "Integration enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=integration-enhancements)
+        - 🎨 UI/UX improvements or frontend features → [Use the "Frontend enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=frontend-enhancements)
+        - 📦 Requesting third-party integrations to become built-in → If a custom integration exists (for example, via HACS), we consider the request resolved
+        - 🚀 Wild or experimental ideas → [Use the "Experimental ideas" category](https://github.com/home-assistant/feature-requests/discussions/new?category=experimental-ideas)
+        
+        Your ideas here help shape the backbone of Home Assistant!
+
+  - type: textarea
+    id: improvement_description
+    attributes:
+      label: Describe your core improvement
+      description: What foundational aspect of Home Assistant would you like to enhance?
+      placeholder: |
+        Example: It would be great if Home Assistant could automatically create a backup before performing any system upgrade, giving users peace of mind and an easy way to roll back if something goes wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_limitations
+    attributes:
+      label: Current limitations
+      description: What problems or limitations does the current implementation have?
+      placeholder: |
+        Example: Currently, users have to remember to manually create backups before upgrades. If an upgrade fails, recovering can be difficult without a recent backup.
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_benefits
+    attributes:
+      label: Technical benefits
+      description: How would this improvement enhance Home Assistant's core capabilities?
+      placeholder: |
+        Example: 
+        - Safer upgrade process with automatic rollback capability
+        - Reduced risk of losing configuration during updates
+        - Better user confidence when updating
+        - Easier recovery from failed upgrades
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Any other details, similar features in other systems, or relevant information?
+      placeholder: |
+        Example: Many operating systems like macOS create restore points before major updates. This has saved countless users from problematic updates.
+    validations:
+      required: false
