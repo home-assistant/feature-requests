@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Check discussion language
         id: detect_language
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             // Get the discussion details from the event payload
@@ -114,7 +114,7 @@ jobs:
       - name: Detect language using AI
         id: ai_language_detection
         if: steps.detect_language.outputs.should_continue == 'true'
-        uses: actions/ai-inference@v1.1.0
+        uses: actions/ai-inference@d645f067d89ee1d5d736a5990e327e504d1c5a4a # v1.1.0
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
@@ -148,7 +148,7 @@ jobs:
       - name: Process non-English discussions
         id: process_language
         if: steps.detect_language.outputs.should_continue == 'true'
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           AI_RESPONSE: ${{ steps.ai_language_detection.outputs.response }}
           DISCUSSION_NUMBER: ${{ steps.detect_language.outputs.discussion_number }}
@@ -202,7 +202,7 @@ jobs:
       - name: Translate non-English discussion
         id: translate_discussion
         if: steps.detect_language.outputs.should_continue == 'true' && steps.process_language.outputs.should_translate == 'true'
-        uses: actions/ai-inference@v1.1.0
+        uses: actions/ai-inference@d645f067d89ee1d5d736a5990e327e504d1c5a4a # v1.1.0
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
@@ -235,7 +235,7 @@ jobs:
 
       - name: Update discussion and notify user
         if: steps.detect_language.outputs.should_continue == 'true' && steps.process_language.outputs.should_translate == 'true'
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           TRANSLATION_RESPONSE: ${{ steps.translate_discussion.outputs.response }}
           DETECTED_LANGUAGE: ${{ steps.process_language.outputs.detected_language }}
