@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Extract integration name and details
         id: extract
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             // For edited discussions, we need to fetch the full discussion body
@@ -68,7 +68,7 @@ jobs:
 
       - name: Find matching integrations
         id: find_integrations
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             const integrationName = '${{ steps.extract.outputs.integration_name }}';
@@ -162,7 +162,7 @@ jobs:
       - name: Determine integration using AI
         id: ai_inference
         if: steps.find_integrations.outputs.found == 'multiple' || steps.find_integrations.outputs.found == 'none'
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@b81b2afb8390ee6839b494a404766bef6493c7d9 # v1.2.8
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
@@ -189,7 +189,7 @@ jobs:
 
       - name: Set final domain
         id: set_domain
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             const found = '${{ steps.find_integrations.outputs.found }}';
@@ -211,7 +211,7 @@ jobs:
 
       - name: Apply integration label
         if: steps.find_integrations.outputs.found != 'error'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             const integrationDomain = '${{ steps.set_domain.outputs.domain }}';
