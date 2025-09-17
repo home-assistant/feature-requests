@@ -114,7 +114,7 @@ jobs:
       - name: Detect language using AI
         id: ai_language_detection
         if: steps.detect_language.outputs.should_continue == 'true'
-        uses: actions/ai-inference@d645f067d89ee1d5d736a5990e327e504d1c5a4a # v1.1.0
+        uses: actions/ai-inference@a1c11829223a786afe3b5663db904a3aa1eac3a2 # v2.0.1
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
@@ -202,7 +202,7 @@ jobs:
       - name: Translate non-English discussion
         id: translate_discussion
         if: steps.detect_language.outputs.should_continue == 'true' && steps.process_language.outputs.should_translate == 'true'
-        uses: actions/ai-inference@d645f067d89ee1d5d736a5990e327e504d1c5a4a # v1.1.0
+        uses: actions/ai-inference@a1c11829223a786afe3b5663db904a3aa1eac3a2 # v2.0.1
         with:
           model: openai/gpt-4o-mini
           system-prompt: |
