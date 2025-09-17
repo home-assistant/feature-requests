@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Extract integration name and details
         id: extract
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             // For edited discussions, we need to fetch the full discussion body
@@ -68,7 +68,7 @@ jobs:
 
       - name: Find matching integrations
         id: find_integrations
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const integrationName = '${{ steps.extract.outputs.integration_name }}';
@@ -189,7 +189,7 @@ jobs:
 
       - name: Set final domain
         id: set_domain
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const found = '${{ steps.find_integrations.outputs.found }}';
@@ -211,7 +211,7 @@ jobs:
 
       - name: Apply integration label
         if: steps.find_integrations.outputs.found != 'error'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const integrationDomain = '${{ steps.set_domain.outputs.domain }}';
