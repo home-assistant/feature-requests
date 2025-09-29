@@ -11,8 +11,8 @@ body:
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
         - 🐛 Reporting OS/Supervisor bugs → [Report an issue](https://github.com/home-assistant/operating-system/issues) or [Supervisor issues](https://github.com/home-assistant/supervisor/issues)
-        - 🏠 Core Home Assistant features → [Use the appropriate feature category](https://github.com/home-assistant/feature-requests/discussions/new/choose)
-        - 📦 Add-on requests → [Use the "Add-ons" category](https://github.com/home-assistant/feature-requests/discussions/new?category=add-ons)
+        - 🏠 Core Home Assistant features → [Use the appropriate feature category](https://github.com/orgs/home-assistant/discussions/new?category=core-functionality)
+        - 📦 Add-on requests → [Use the "Add-ons" category](https://github.com/orgs/home-assistant/discussions/new?category=add-ons)
 
   - type: textarea
     id: feature_description
