@@ -10,9 +10,9 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support creating automations? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - 🔌 Integration-specific actions or services → [Use the "Integration enhancements" category](https://github.com/home-assistant/feature-requests/discussions/new?category=integration-enhancements)
+        - 🔌 Integration-specific actions or services → [Use the "Integration enhancements" category](https://github.com/orgs/home-assistant/discussions/new?category=integration-enhancements)
         - 🐛 Reporting bugs in automations → [Report an issue](https://github.com/home-assistant/core/issues/new/choose)
-        - 📝 Template enhancements → [Use the "Template engine" category](https://github.com/home-assistant/feature-requests/discussions/new?category=template-engine)
+        - 📝 Template enhancements → [Use the "Template engine" category](https://github.com/orgs/home-assistant/discussions/new?category=template-engine)
         
         This is specifically for features that extend what automations and scripts can do at the engine level.
 
