@@ -8,6 +8,8 @@ on:
 jobs:
   sync-labels:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write # This is required to create/push the new labels
     steps:
       - name: Sync integration labels
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
