@@ -2,7 +2,7 @@ name: Clean feature request prefixes from discussion titles
 
 on:
   discussion:
-    types: [created, edited]
+    types: [created]
 
 permissions:
   discussions: write
