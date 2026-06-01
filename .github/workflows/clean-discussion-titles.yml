@@ -20,7 +20,7 @@ jobs:
             
             // Define patterns to remove (case-insensitive)
             const patterns = [
-              /^\[?FR\]?:?[^\w]\s*/i,
+              /^\[?FR[\]:\s-]{1,}\s*/i,
               /^\[?Feature\s*request\]?:?\s*/i,
               /^Feature\s*request:?\s*/i,
               /^\[?FR\s*-\s*/i,
