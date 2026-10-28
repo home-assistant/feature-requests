@@ -10,7 +10,7 @@ body:
         
         **This is NOT for:**
         - 🆘 In need for support? → [Community Forum](https://community.home-assistant.io) or join our [Discord chat server](https://www.home-assistant.io/join-chat). You are more likely to get the answer you are looking for in those places.
-        - 🔤 Fixing existing translations → [Contribute on Lokalise](https://developers.home-assistant.io/docs/translations)
+        - 🔤 Fixing existing translations → [Contribute on Lokalise](https://contributors.home-assistant.io/translate/)
 
   - type: textarea
     id: translation_request
